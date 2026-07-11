@@ -1,0 +1,110 @@
+/* =============================================================================
+   THEME — single source of truth for every design token.
+   Rebrand the site by editing this file only. No hardcoded colors in components.
+   Palette: light, airy, Swiss-minimal. COOL blue-tinted paper, deep ink,
+   ONE brand-blue accent used sparingly (CTAs, highlights, focus rings).
+
+   Brand blue scale (reference):
+   50 #e8f5ff · 100 #d5ecff · 200 #b3dbff · 300 #85c2ff · 400 #569dff
+   500 #2f77ff · 600 #0c4eff · 700 #0040ff · 800 #063bcd · 900 #10399f · 950 #0a205c
+   ========================================================================== */
+
+@theme inline {
+  /* -- semantic color mapping (Tailwind v4) -- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  /* deep brand panel — backdrop for white line-art (stays dark in BOTH themes) */
+  --color-brand-panel: var(--brand-panel);
+  --color-brand-panel-deep: var(--brand-panel-deep);
+
+  /* -- typography --
+     display: main brand face for big confident headings (Agdasima)
+     sans:    supporting body face (Poppins)
+     mono:    micro-labels, eyebrows, tags (Geist Mono) */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-agdasima), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-agdasima), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* -- radius scale -- */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* -- motion tokens (CSS transitions; JS mirror in lib/motion.ts) -- */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   LIGHT — the primary experience. Cool blue-white paper, deep ink, brand blue.
+   -------------------------------------------------------------------------- */
+:root {
+  --background: oklch(0.982 0.005 245);           /* cool off-white paper   */
+  --foreground: oklch(0.2 0.03 262);              /* deep cool ink          */
+  --card: oklch(1 0 0);                           /* pure white surfaces    */
+  --card-foreground: oklch(0.2 0.03 262);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.03 262);
+  --primary: #0c4eff;                             /* brand blue 600 — THE accent */
+  --primary-foreground: oklch(0.99 0.003 245);
+  --secondary: oklch(0.955 0.008 245);            /* quiet cool-gray fill   */
+  --secondary-foreground: oklch(0.2 0.03 262);
+  --muted: oklch(0.955 0.008 245);
+  --muted-foreground: oklch(0.46 0.025 258);      /* supporting text, 4.5:1+ */
+  --accent: oklch(0.94 0.012 245);                /* hover wash             */
+  --accent-foreground: oklch(0.2 0.03 262);
+  --destructive: oklch(0.55 0.21 27);
+  --border: oklch(0.908 0.012 245);
+  --input: oklch(0.908 0.012 245);
+  --ring: #0c4eff;
+  --brand-panel: #0c4eff;                         /* blue 600 */
+  --brand-panel-deep: #063bcd;                    /* blue 800 */
+  --radius: 0.625rem;
+}
+
+/* ---------------------------------------------------------------------------
+   DARK — token-driven companion. Deep navy-black, lifted brand blue (400).
+   -------------------------------------------------------------------------- */
+.dark {
+  --background: oklch(0.15 0.025 262);
+  --foreground: oklch(0.965 0.005 245);
+  --card: oklch(0.19 0.028 262);
+  --card-foreground: oklch(0.965 0.005 245);
+  --popover: oklch(0.19 0.028 262);
+  --popover-foreground: oklch(0.965 0.005 245);
+  --primary: #569dff;                             /* brand blue 400 for contrast */
+  --primary-foreground: #0a205c;                  /* brand blue 950 */
+  --secondary: oklch(0.24 0.03 262);
+  --secondary-foreground: oklch(0.965 0.005 245);
+  --muted: oklch(0.24 0.03 262);
+  --muted-foreground: oklch(0.72 0.02 250);
+  --accent: oklch(0.26 0.032 262);
+  --accent-foreground: oklch(0.965 0.005 245);
+  --destructive: oklch(0.66 0.19 25);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: #569dff;
+  --brand-panel: #10399f;                         /* blue 900 — keeps white art crisp */
+  --brand-panel-deep: #0a205c;                    /* blue 950 */
+}

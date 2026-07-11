@@ -1,0 +1,77 @@
+# BUILD PROMPT: Freelance Portfolio — Custom Software & AI Automation
+
+## Goal
+Build a modern, light, minimal, and highly polished portfolio website for a freelance software engineer specializing in custom business software and AI automation. The site's core purpose is to WIN CLIENT TRUST and generate inquiries. It is NOT a resume — it is outcome-focused: every element answers "can this person solve my business problem?" The person (his skills, journey) appears only as *proof*, never as the subject. The site itself must be a living demonstration of his UI/UX + engineering craft — so quality of design and motion is the actual pitch.
+
+## Positioning & Voice
+- **Headline offer:** custom software / web app development + AI automation that helps businesses grow.
+- **Hero strategy:** outcome-first — lead with what businesses GET ("I help businesses grow by building software that solves real problems / eliminates manual work / turns operations digital"), not with job titles.
+- **Tone:** confident, clear, warm, senior. No buzzword salad. Short, punchy, benefit-driven copy. Speaks to business owners, not other developers.
+- **Trust through outcomes:** the whole site is structured as problem → solution → result stories with real client names and results.
+
+## Tech Stack (use exactly this)
+- **Framework:** Next.js (App Router) + React + TypeScript
+- **Styling:** Tailwind CSS (v4) + **shadcn/ui** (the aesthetic backbone — elegant, clean, minimal)
+- **Animation:** **Framer Motion** (rich, purposeful motion — the wow-factor)
+- **Contact form:** submits to a Next.js server action/route that BOTH (a) sends an email via **Resend** and (b) stores the submission in **Supabase**. Validate with zod + react-hook-form. Spam protection (honeypot + basic rate limit).
+- **Deploy:** Vercel
+- **Icons:** lucide-react
+
+## Design System (centralized, rebrandable)
+- ALL design tokens in ONE file (`app/theme.css` or `styles/theme.css`), shadcn conventions (light + dark sets). No hardcoded colors in components — treat inline hex as a bug.
+- **Aesthetic: light, airy, Swiss-minimal.** Generous whitespace, strong typographic hierarchy, few elements per screen, crisp alignment to a grid. Premium and calm — think elegant editorial, not busy dashboard.
+- **Palette:** predominantly light (soft off-white/neutral backgrounds), near-black text, ONE refined accent color used sparingly for CTAs and highlights. Restraint is the whole point.
+- **Typography:** a characterful but clean type scale — a distinctive display face for headings, a highly legible body face. Big, confident headings. Define as tokens.
+- **Dark mode:** included, token-driven, but light is the primary experience.
+
+## Motion Principles (CRITICAL — this is the craft demo)
+**Restraint in layout, generosity in motion.** The layout stays minimal and uncluttered; the FEW elements present move beautifully. Motion must feel purposeful and premium, never decorative noise.
+- Scroll-triggered reveals (fade + subtle rise) as sections enter — staggered, tasteful.
+- A refined hero entrance animation that sets the tone immediately.
+- Micro-interactions: buttons, links, cards respond to hover/focus with smooth, subtle feedback.
+- Project cards: elegant hover states (lift, image reveal, or detail slide-in).
+- Smooth page/section transitions.
+- **Respect `prefers-reduced-motion`** — full graceful fallback. Motion must never block content or hurt performance (60fps, transform/opacity only).
+- Every animation should make the site feel more crafted, not more crowded. When in doubt, less.
+
+## Page Structure (single-page scroll + individual case-study pages)
+
+### Landing (single-page scroll with anchored nav)
+1. **Hero** — outcome-first headline + one-line subhead + primary CTA ("Start a project" → contact). Refined entrance motion. One standout credibility signal (e.g. "400+ websites & apps shipped"). Clean, spacious, immediate.
+2. **What I do / Services** — 2 headline offerings framed as business outcomes: **Custom Software & Web Apps** (operational tools, dashboards, POS, inventory — "turn manual work into software") and **AI Automation** ("automate the repetitive, free your team"). Plus a lighter **Web Design** mention (leverage the 400+ sites as volume credibility). Benefit-led, not tech-led.
+3. **Featured Work** — the trust engine. Grouped by CATEGORY (Custom Apps / AI Automation / Web). Each project = a card with client name, the PROBLEM solved, and the RESULT. Real names, screenshots (placeholders now, swappable). Cards link to full case-study pages. Feature FishPin here as a flagship (his own shipped product). Use placeholder image components clearly marked for easy swap.
+4. **The Journey (credibility arc)** — an honest, understated visual timeline of the design→engineering path: Graphic Design (1.5 yr) → Web Design (2.5 yr, 400+ sites) → UI/UX (1 yr) → Software Engineering (1.5 yr, now). The narrative: "a designer who became an engineer — so the software is both technically solid AND genuinely well-designed." ~6.5 years total. Do NOT inflate to a bigger number; the *shape* and the 400+ sites are the flex, not the years.
+5. **How I work / Process** — brief, trust-building: how a project goes from problem → shipped software. Reassures a nervous first-time buyer.
+6. **Contact** — the primary CTA. Clean contact form (name, email, company optional, project type, message). Warm copy. Clear "what happens next."
+7. **Footer** — email, socials, subtle "built with Next.js" nod.
+
+### Case-study pages (`/work/[slug]`)
+Each featured project gets a full page: the business, the problem, the approach, the solution, the result/outcome, tech used, screenshots gallery. Structured storytelling — this is where trust is deeply earned. Consistent template, easy to add new ones as international clients land.
+
+## Content Notes
+- Placeholder screenshots + copy now, all clearly structured for easy real-content swap later. Use a simple content structure (e.g. a typed `projects` array / MDX) so adding/editing projects is trivial.
+- Real client names to be filled: the POS build, Joshua's Mr. Kamote Chips (inventory app + investor site), FishPin (flagship, on Google Play), plus room for more/international.
+- Every project MUST follow problem → solution → result. If a hard metric exists, feature it big; if not, a clear qualitative outcome.
+
+## SEO / Performance / Quality
+- It's a public site that must impress on first load AND rank: SSR/SSG, fast LCP, `next/image`, per-page metadata, Open Graph + Twitter cards (rich previews when shared), sitemap.xml, robots.txt, favicon.
+- Lighthouse-conscious: motion must not tank performance.
+- Fully responsive, flawless on mobile (many prospects browse on phones). The minimal aesthetic must hold up small.
+- Accessibility: semantic HTML, keyboard nav, visible focus, reduced-motion support, good contrast.
+
+## Contact Form (technical)
+- react-hook-form + zod validation.
+- Server action/route: send email via Resend to the owner AND insert row into Supabase (`inquiries` table: name, email, company, project_type, message, created_at).
+- Honeypot field + basic rate limiting for spam.
+- Success/error states with tasteful feedback (toast or inline). Never lose a submission — store first, email second.
+
+## Deliverables (build in this order — confirm each runs before moving on)
+1. **Scaffold:** Next.js (App Router) + TS + Tailwind v4 + shadcn/ui + Framer Motion. Centralized `theme.css` (light Swiss-minimal palette). App shell, nav, footer, dark mode. Vercel-ready. Verify it runs.
+2. **Hero + Services** with refined entrance motion + scroll-reveal system (reusable motion components).
+3. **Featured Work** — category-grouped cards, placeholder projects (typed data structure), elegant hover motion, FishPin flagged.
+4. **Case-study page template** (`/work/[slug]`) with the problem→solution→result structure.
+5. **Journey timeline + Process** sections (honest, understated, animated reveals).
+6. **Contact form** — Resend + Supabase, validation, spam protection, success states.
+7. **SEO, metadata/OG, responsive pass, a11y, reduced-motion, performance polish.**
+
+Start with deliverable 1 and confirm it runs before continuing. Ask before major architectural changes. Throughout: restraint in layout, generosity in motion — the site itself is the portfolio piece.
