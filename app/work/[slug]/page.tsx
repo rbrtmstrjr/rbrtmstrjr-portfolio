@@ -3,13 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getProject, projects } from "@/lib/projects";
+import { getAllProjects, getMergedProject } from "@/lib/projects-data";
 import { ProjectImage } from "@/components/site/project-image";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 
 type Params = { slug: string };
 
-export function generateStaticParams(): Params[] {
+// New managed slugs published after a deploy render on demand (ISR) —
+// generateStaticParams covers everything known at build time.
+export async function generateStaticParams(): Promise<Params[]> {
+  const projects = await getAllProjects();
   return projects.map((p) => ({ slug: p.slug }));
 }
 
@@ -19,7 +22,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = await getMergedProject(slug);
   if (!project) return {};
   return {
     title: `${project.title} — Case study`,
@@ -38,13 +41,19 @@ const chapters = [
   { key: "outcome", label: "The outcome" },
 ] as const;
 
+const STATUS_LABELS: Record<string, string> = {
+  "in-progress": "In progress",
+  "just-started": "Just started",
+};
+
 export default async function CaseStudyPage({
   params,
 }: {
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const project = getProject(slug);
+  const projects = await getAllProjects();
+  const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
   const index = projects.findIndex((p) => p.slug === project.slug);
@@ -55,7 +64,7 @@ export default async function CaseStudyPage({
       {/* header */}
       <Reveal>
         <Link
-          href="/#work"
+          href="/work"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" aria-hidden />
@@ -69,9 +78,20 @@ export default async function CaseStudyPage({
               Flagship — own product
             </span>
           ) : null}
-          <p className="eyebrow">
-            {project.client} · {project.category}
-          </p>
+          <span className="flex flex-wrap items-center gap-3">
+            <p className="eyebrow">
+              {project.client} · {project.category}
+            </p>
+            {project.status && STATUS_LABELS[project.status] ? (
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-primary/15 bg-primary/[0.05] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-primary/80">
+                <span
+                  className="size-1.5 rounded-full bg-primary/70 motion-safe:animate-pulse"
+                  aria-hidden
+                />
+                {STATUS_LABELS[project.status]}
+              </span>
+            ) : null}
+          </span>
           <h1 className="mt-4 text-4xl sm:text-5xl md:text-6xl">{project.title}</h1>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
             {project.study.intro}
@@ -86,11 +106,27 @@ export default async function CaseStudyPage({
               <p className="mt-0.5 text-xs text-muted-foreground">{project.metric.label}</p>
             </div>
           ) : null}
+          {(
+            [
+              ["Year", project.year],
+              ["Duration", project.duration],
+              ["Role", project.role],
+            ] as const
+          ).map(([label, value]) =>
+            value ? (
+              <div key={label}>
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  {label}
+                </p>
+                <p className="mt-1 text-sm font-medium">{value}</p>
+              </div>
+            ) : null
+          )}
           <div className="flex flex-wrap gap-2">
             {project.study.tech.map((t) => (
               <span
                 key={t}
-                className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground"
+                className="rounded-lg border border-primary/15 bg-primary/[0.05] px-3 py-1 text-xs font-medium text-primary/80"
               >
                 {t}
               </span>
@@ -139,6 +175,20 @@ export default async function CaseStudyPage({
           </Reveal>
         ))}
       </div>
+
+      {/* client testimonial */}
+      {project.testimonial ? (
+        <Reveal>
+          <figure className="mt-20 rounded-2xl border-l-2 border-primary bg-primary/5 p-8 md:p-12">
+            <blockquote className="max-w-3xl text-xl leading-relaxed font-medium md:text-2xl">
+              “{project.testimonial.quote}”
+            </blockquote>
+            <figcaption className="mt-5 text-sm text-muted-foreground">
+              — {project.testimonial.author}
+            </figcaption>
+          </figure>
+        </Reveal>
+      ) : null}
 
       {/* gallery */}
       {project.study.gallery?.length ? (

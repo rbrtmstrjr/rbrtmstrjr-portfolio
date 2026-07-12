@@ -18,7 +18,7 @@
 import * as React from "react";
 import { useReducedMotion } from "framer-motion";
 
-const SVG_URL = "/images/profile.svg";
+const DEFAULT_SVG_URL = "/images/profile.svg";
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 /** geometry — in SVG user units (viewBox is ~1907×2170) */
@@ -182,18 +182,21 @@ function startComet(svg: SVGSVGElement): CometController {
 export function ProfileArt({
   className,
   label,
+  src = DEFAULT_SVG_URL,
 }: {
   className?: string;
   label: string;
+  /** any white line-art svg under /public — the comet works on its paths */
+  src?: string;
 }) {
   const hostRef = React.useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const [markup, setMarkup] = React.useState<string | null>(null);
 
-  // fetch + inline the svg once
+  // fetch + inline the svg once (per src)
   React.useEffect(() => {
     let alive = true;
-    fetch(SVG_URL)
+    fetch(src)
       .then((r) => r.text())
       .then((text) => {
         if (alive) setMarkup(text);
@@ -202,7 +205,7 @@ export function ProfileArt({
     return () => {
       alive = false;
     };
-  }, []);
+  }, [src]);
 
   // create the comet ONCE per mount and drive pause/resume DIRECTLY from an
   // IntersectionObserver — no React state relay in between (a state-driven

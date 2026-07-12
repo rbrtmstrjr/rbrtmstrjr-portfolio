@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
-import { NavSearch } from "@/components/site/nav-search";
+import { NavSearch, type SearchProject } from "@/components/site/nav-search";
 
-export function Navbar() {
+export function Navbar({ searchProjects }: { searchProjects: SearchProject[] }) {
   const [scrolled, setScrolled] = React.useState(false);
   const { scrollY } = useScroll();
 
@@ -45,7 +45,7 @@ export function Navbar() {
 
         {/* centered subtle search (desktop) */}
         <div className="hidden flex-1 justify-center px-6 md:flex">
-          <NavSearch />
+          <NavSearch projects={searchProjects} />
         </div>
 
         <div className="flex shrink-0 items-center gap-2">

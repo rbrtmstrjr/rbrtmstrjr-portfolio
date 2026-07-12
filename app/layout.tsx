@@ -5,8 +5,10 @@ import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/site/navbar";
 import { BottomNav } from "@/components/site/bottom-nav";
 import { ScrollGuide } from "@/components/site/scroll-guide";
+import { SiteChrome } from "@/components/site/site-chrome";
 import { Footer } from "@/components/site/footer";
 import { site } from "@/lib/site";
+import { getAllProjects } from "@/lib/projects-data";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -57,11 +59,19 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Merged (hardcoded + managed) list feeds the nav search on every page.
+  const searchProjects = (await getAllProjects()).map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    client: p.client,
+    category: p.category,
+  }));
+
   return (
     <html
       lang="en"
@@ -76,13 +86,17 @@ export default function RootLayout({
           Skip to content
         </a>
         <Providers>
-          <Navbar />
+          <SiteChrome>
+            <Navbar searchProjects={searchProjects} />
+          </SiteChrome>
           <main id="main" className="flex-1">
             {children}
           </main>
-          <Footer />
-          <BottomNav />
-          <ScrollGuide />
+          <SiteChrome>
+            <Footer />
+            <BottomNav />
+            <ScrollGuide />
+          </SiteChrome>
         </Providers>
       </body>
     </html>

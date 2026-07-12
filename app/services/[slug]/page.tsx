@@ -8,7 +8,7 @@ import { ProjectImage } from "@/components/site/project-image";
 import { AutomationFlow, MiniDashboard } from "@/components/site/service-graphics";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { getService, services } from "@/lib/services";
-import { projects } from "@/lib/projects";
+import { getAllProjects } from "@/lib/projects-data";
 
 const ICONS = { blocks: Blocks, bot: Bot } as const;
 const GRAPHICS = { blocks: MiniDashboard, bot: AutomationFlow } as const;
@@ -45,7 +45,7 @@ export default async function ServicePage({
 
   const Icon = ICONS[service.icon];
   const Graphic = GRAPHICS[service.icon];
-  const related = projects
+  const related = (await getAllProjects())
     .filter((p) => p.category === service.detail.categoryKey)
     .slice(0, 3);
   const other = services.find((s) => s.slug !== service.slug)!;
@@ -179,16 +179,18 @@ export default async function ServicePage({
                       />
                     </div>
                     <div className="flex flex-1 flex-col p-6">
-                      <p className="eyebrow">{project.client}</p>
-                      <h3 className="mt-2 font-sans text-lg font-semibold tracking-tight">
+                      <h3 className="font-sans text-xl font-semibold tracking-tight">
                         {project.title}
                       </h3>
-                      <span className="mt-auto flex items-center gap-1.5 pt-4 text-sm font-medium text-primary">
+                      <p className="mt-1.5 text-sm text-muted-foreground">{project.client}</p>
+                      <span className="mt-auto flex items-center gap-2 pt-4 text-sm font-medium text-primary">
                         Case study
-                        <ArrowUpRight
-                          className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        <span
+                          className="flex size-6 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground"
                           aria-hidden
-                        />
+                        >
+                          <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-px group-hover:-translate-y-px" />
+                        </span>
                       </span>
                     </div>
                   </WindowCard>

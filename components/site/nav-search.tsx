@@ -7,7 +7,15 @@
 import * as React from "react";
 import Link from "next/link";
 import { Briefcase, Hash, Search } from "lucide-react";
-import { projects } from "@/lib/projects";
+
+/** Minimal project fields the search needs — built server-side from the
+ *  merged (hardcoded + Supabase) list and passed down through the navbar. */
+export type SearchProject = {
+  slug: string;
+  title: string;
+  client: string;
+  category: string;
+};
 
 type Result = {
   href: string;
@@ -18,29 +26,33 @@ type Result = {
 
 const SECTIONS: Result[] = [
   { href: "/#services", label: "Services", sub: "What I do", kind: "section" },
+  { href: "/work", label: "All work", sub: "Every project, one page", kind: "section" },
   { href: "/#work", label: "Featured work", sub: "Case studies", kind: "section" },
   { href: "/#journey", label: "Journey", sub: "Designer × engineer", kind: "section" },
   { href: "/#process", label: "Process", sub: "How I work", kind: "section" },
   { href: "/#contact", label: "Contact", sub: "Start a project", kind: "section" },
 ];
 
-const INDEX: Result[] = [
-  ...projects.map((p) => ({
-    href: `/work/${p.slug}`,
-    label: p.title,
-    sub: `${p.client} · ${p.category}`,
-    kind: "project" as const,
-  })),
-  ...SECTIONS,
-];
-
-export function NavSearch() {
+export function NavSearch({ projects }: { projects: SearchProject[] }) {
   const [query, setQuery] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
+  const index: Result[] = React.useMemo(
+    () => [
+      ...projects.map((p) => ({
+        href: `/work/${p.slug}`,
+        label: p.title,
+        sub: `${p.client} · ${p.category}`,
+        kind: "project" as const,
+      })),
+      ...SECTIONS,
+    ],
+    [projects]
+  );
+
   const q = query.trim().toLowerCase();
   const results = q
-    ? INDEX.filter(
+    ? index.filter(
         (r) => r.label.toLowerCase().includes(q) || r.sub.toLowerCase().includes(q)
       ).slice(0, 6)
     : [];

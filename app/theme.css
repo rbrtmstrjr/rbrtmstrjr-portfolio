@@ -1,8 +1,9 @@
 /* =============================================================================
    THEME — single source of truth for every design token.
    Rebrand the site by editing this file only. No hardcoded colors in components.
-   Palette: light, airy, Swiss-minimal. COOL blue-tinted paper, deep ink,
-   ONE brand-blue accent used sparingly (CTAs, highlights, focus rings).
+   Palette: light, airy, Swiss-minimal. ONE accent per theme, used sparingly
+   (CTAs, highlights, focus rings): brand BLUE in light, AQUAMARINE in dark.
+   The two accents never cross themes.
 
    Brand blue scale (reference):
    50 #e8f5ff · 100 #d5ecff · 200 #b3dbff · 300 #85c2ff · 400 #569dff
@@ -26,6 +27,9 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  /* functional status colors (badges/feedback only — NOT brand accents) */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -75,6 +79,8 @@
   --accent: oklch(0.94 0.012 245);                /* hover wash             */
   --accent-foreground: oklch(0.2 0.03 262);
   --destructive: oklch(0.55 0.21 27);
+  --success: oklch(0.55 0.14 155);                /* status green (functional) */
+  --warning: oklch(0.6 0.13 70);                  /* status amber (functional) */
   --border: oklch(0.908 0.012 245);
   --input: oklch(0.908 0.012 245);
   --ring: #0c4eff;
@@ -84,7 +90,12 @@
 }
 
 /* ---------------------------------------------------------------------------
-   DARK — token-driven companion. Deep navy-black, lifted brand blue (400).
+   DARK — token-driven companion. Deep navy-black with an AQUAMARINE accent
+   (dark-only — light mode stays brand blue, blue never appears in dark).
+
+   Aquamarine scale (reference):
+   50 #eefffa · 100 #c5ffee · 200 #8bffdf · 300 #64ffda · 400 #14edc0
+   500 #00d1a9 · 600 #00a88b · 700 #008570 · 800 #056a5b · 900 #0a574b · 950 #00352f
    -------------------------------------------------------------------------- */
 .dark {
   --background: oklch(0.15 0.025 262);
@@ -93,8 +104,8 @@
   --card-foreground: oklch(0.965 0.005 245);
   --popover: oklch(0.19 0.028 262);
   --popover-foreground: oklch(0.965 0.005 245);
-  --primary: #569dff;                             /* brand blue 400 for contrast */
-  --primary-foreground: #0a205c;                  /* brand blue 950 */
+  --primary: #64ffda;                             /* aquamarine 300 — THE dark accent */
+  --primary-foreground: #00352f;                  /* aquamarine 950 */
   --secondary: oklch(0.24 0.03 262);
   --secondary-foreground: oklch(0.965 0.005 245);
   --muted: oklch(0.24 0.03 262);
@@ -102,9 +113,11 @@
   --accent: oklch(0.26 0.032 262);
   --accent-foreground: oklch(0.965 0.005 245);
   --destructive: oklch(0.66 0.19 25);
+  --success: oklch(0.78 0.15 160);                /* status green (functional) */
+  --warning: oklch(0.82 0.14 85);                 /* status amber (functional) */
   --border: oklch(1 0 0 / 11%);
   --input: oklch(1 0 0 / 15%);
-  --ring: #569dff;
-  --brand-panel: #10399f;                         /* blue 900 — keeps white art crisp */
-  --brand-panel-deep: #0a205c;                    /* blue 950 */
+  --ring: #64ffda;
+  --brand-panel: #0a574b;                         /* aquamarine 900 — keeps white art crisp */
+  --brand-panel-deep: #00352f;                    /* aquamarine 950 */
 }

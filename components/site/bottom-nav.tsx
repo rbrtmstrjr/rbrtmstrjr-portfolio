@@ -8,6 +8,7 @@
  */
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { House, LayoutGrid, Briefcase, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,12 +17,16 @@ import { EASE_OUT } from "@/lib/motion";
 const ITEMS = [
   { id: "home", label: "Home", href: "/#home", icon: House },
   { id: "services", label: "Services", href: "/#services", icon: LayoutGrid },
-  { id: "work", label: "Work", href: "/#work", icon: Briefcase },
+  // Work goes to the full work page; the homepage section is still scroll-spied
+  { id: "work", label: "Work", href: "/work", icon: Briefcase },
   { id: "contact", label: "Contact", href: "/#contact", icon: Mail },
 ] as const;
 
 export function BottomNav() {
-  const [active, setActive] = React.useState<string>("");
+  const pathname = usePathname();
+  const [spied, setSpied] = React.useState<string>("");
+  // On /work and /work/[slug] the Work item is active by route, not by spy.
+  const active = pathname.startsWith("/work") ? "work" : spied;
 
   // scroll-spy: the section closest to the viewport's middle wins
   React.useEffect(() => {
@@ -32,14 +37,15 @@ export function BottomNav() {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          if (entry.isIntersecting) setSpied(entry.target.id);
         }
       },
       { rootMargin: "-40% 0px -55% 0px" }
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, []);
+    // re-attach on route change — the dock persists across soft navigations
+  }, [pathname]);
 
   return (
     <motion.nav

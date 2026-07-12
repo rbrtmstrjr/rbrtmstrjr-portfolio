@@ -4,8 +4,10 @@ import { Services } from "@/components/sections/services";
 import { Work } from "@/components/sections/work";
 import { Journey } from "@/components/sections/journey";
 import { Process } from "@/components/sections/process";
+import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
 import { site } from "@/lib/site";
+import { getVisibleCategories } from "@/lib/projects-data";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -18,7 +20,9 @@ const jsonLd = {
   knowsAbout: ["Custom software", "Web app development", "AI automation", "Web design"],
 };
 
-export default function Home() {
+export default async function Home() {
+  const { projects, categories } = await getVisibleCategories();
+
   return (
     <>
       <script
@@ -28,9 +32,10 @@ export default function Home() {
       <Hero />
       <TechMarquee />
       <Services />
-      <Work />
+      <Work projects={projects} categories={categories} />
       <Journey />
       <Process />
+      <Testimonials />
       <Contact />
     </>
   );

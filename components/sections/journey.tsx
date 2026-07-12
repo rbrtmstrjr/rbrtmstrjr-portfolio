@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
+import { ProfileArt } from "@/components/site/profile-art";
 import { EASE_OUT } from "@/lib/motion";
+import { site } from "@/lib/site";
 
 const stages = [
   {
@@ -32,72 +34,82 @@ export function Journey() {
   return (
     <section id="journey" className="scroll-mt-24">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-36">
-        <Reveal>
-          <p className="eyebrow">The journey</p>
-          <h2 className="mt-4 max-w-2xl text-4xl sm:text-5xl md:text-6xl">
-            A designer who became an engineer
-          </h2>
-          <p className="mt-5 max-w-xl leading-relaxed text-muted-foreground">
-            Six and a half years, one direction: from making things look right to
-            making them work. That&apos;s why the software I build is both
-            technically solid <em>and</em> genuinely well-designed.
-          </p>
-        </Reveal>
+        <div className="grid items-start gap-14 lg:grid-cols-2 lg:gap-20">
+          {/* left — hero-sized portrait on top, story beneath */}
+          <div>
+            <Reveal>
+              <div className="mx-auto w-full max-w-lg lg:mx-0 lg:max-w-none">
+                {/* same comet animation as the hero, running over this artwork */}
+                <ProfileArt
+                  src="/images/front-image.svg"
+                  label={`Illustrated line-art portrait of ${site.name} tipping his cap`}
+                  className="aspect-[2106/2286]"
+                />
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="eyebrow mt-10">The journey</p>
+              <h2 className="mt-4 text-4xl sm:text-5xl md:text-6xl">
+                A designer who became an engineer
+              </h2>
+              <p className="mt-5 max-w-xl leading-relaxed text-muted-foreground">
+                Six and a half years, one direction: from making things look right
+                to making them work. That&apos;s why the software I build is both
+                technically solid <em>and</em> genuinely well-designed.
+              </p>
+            </Reveal>
+          </div>
 
-        <RevealGroup
-          as="ol"
-          className="mt-16 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
-          staggerChildren={0.16}
-        >
-          {stages.map((stage, i) => (
-            <RevealItem
-              key={stage.title}
-              as="li"
-              className="relative pt-6"
-            >
-              {/* timeline line — draws itself in as the stage reveals */}
-              <motion.span
-                aria-hidden
-                className="absolute left-0 top-0 h-0.5 w-full origin-left bg-border"
-                variants={{
-                  hidden: { scaleX: 0 },
-                  visible: {
-                    scaleX: 1,
-                    transition: { duration: 0.9, ease: EASE_OUT, delay: 0.1 },
-                  },
-                }}
-              />
-              {/* timeline dot — filled for the current stage */}
-              <motion.span
-                aria-hidden
-                className={`absolute -top-[3px] left-0 size-2 rounded-full ${
-                  i === stages.length - 1 ? "bg-primary" : "bg-border"
-                }`}
-                variants={{
-                  hidden: { scale: 0 },
-                  visible: {
-                    scale: 1,
-                    transition: { duration: 0.4, ease: EASE_OUT, delay: 0.05 },
-                  },
-                }}
-              />
-              <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
-                {stage.years}
-              </p>
-              <h3 className="mt-3 font-sans text-lg font-semibold tracking-tight">
-                {stage.title}
-              </h3>
-              {"stat" in stage && stage.stat ? (
-                <p className="mt-1 font-display text-3xl text-primary md:text-4xl">
-                  {stage.stat}
+          {/* right — vertical timeline */}
+          <RevealGroup as="ol" className="lg:pt-4" staggerChildren={0.16}>
+            {stages.map((stage, i) => (
+              <RevealItem key={stage.title} as="li" className="relative pl-10 pb-12 last:pb-0">
+                {/* connector line — draws down as the stage reveals */}
+                {i < stages.length - 1 ? (
+                  <motion.span
+                    aria-hidden
+                    className="absolute bottom-0 left-[3.5px] top-4 w-0.5 origin-top bg-border"
+                    variants={{
+                      hidden: { scaleY: 0 },
+                      visible: {
+                        scaleY: 1,
+                        transition: { duration: 0.9, ease: EASE_OUT, delay: 0.15 },
+                      },
+                    }}
+                  />
+                ) : null}
+                {/* timeline dot — filled for the current stage */}
+                <motion.span
+                  aria-hidden
+                  className={`absolute left-0 top-1.5 size-2 rounded-full ${
+                    i === stages.length - 1 ? "bg-primary" : "bg-border"
+                  }`}
+                  variants={{
+                    hidden: { scale: 0 },
+                    visible: {
+                      scale: 1,
+                      transition: { duration: 0.4, ease: EASE_OUT, delay: 0.05 },
+                    },
+                  }}
+                />
+                <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                  {stage.years}
                 </p>
-              ) : null}
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {stage.blurb}
-              </p>
-            </RevealItem>
-          ))}
-        </RevealGroup>
+                <h3 className="mt-3 font-sans text-xl font-semibold tracking-tight">
+                  {stage.title}
+                </h3>
+                {"stat" in stage && stage.stat ? (
+                  <p className="mt-1 font-display text-3xl text-primary md:text-4xl">
+                    {stage.stat}
+                  </p>
+                ) : null}
+                <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {stage.blurb}
+                </p>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </div>
       </div>
     </section>
   );
