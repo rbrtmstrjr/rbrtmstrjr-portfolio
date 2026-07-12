@@ -2,9 +2,11 @@
 
 import { motion } from "framer-motion";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
+import { ContributionGraph } from "@/components/site/contribution-graph";
 import { ProfileArt } from "@/components/site/profile-art";
 import { EASE_OUT } from "@/lib/motion";
 import { site } from "@/lib/site";
+import type { Contributions } from "@/lib/github";
 
 const stages = [
   {
@@ -30,7 +32,7 @@ const stages = [
   },
 ] as const;
 
-export function Journey() {
+export function Journey({ contributions }: { contributions?: Contributions | null }) {
   return (
     <section id="journey" className="scroll-mt-24">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-36">
@@ -60,8 +62,9 @@ export function Journey() {
             </Reveal>
           </div>
 
-          {/* right — vertical timeline */}
-          <RevealGroup as="ol" className="lg:pt-4" staggerChildren={0.16}>
+          {/* right — vertical timeline + live contribution proof */}
+          <div className="lg:pt-4">
+            <RevealGroup as="ol" staggerChildren={0.16}>
             {stages.map((stage, i) => (
               <RevealItem key={stage.title} as="li" className="relative pl-10 pb-12 last:pb-0">
                 {/* connector line — draws down as the stage reveals */}
@@ -108,7 +111,15 @@ export function Journey() {
                 </p>
               </RevealItem>
             ))}
-          </RevealGroup>
+            </RevealGroup>
+
+            {/* the receipts — GitHub's own record, sitting beside the story */}
+            {contributions ? (
+              <Reveal delay={0.15} className="mt-12">
+                <ContributionGraph contributions={contributions} />
+              </Reveal>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>

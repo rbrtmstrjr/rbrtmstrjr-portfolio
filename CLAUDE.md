@@ -61,7 +61,7 @@ which can't read CSS vars.
 
 | Route | Source | Notes |
 |---|---|---|
-| `/` | `app/page.tsx` | Section order: Hero → TechMarquee → Services → Work → Journey → Process → Contact |
+| `/` | `app/page.tsx` | Section order: Hero → TechMarquee → Services → Work → Journey (contribution graph inside) → Process → Testimonials → Contact; `revalidate = 3600` (hourly ISR keeps the GitHub graph fresh; admin saves still revalidate on demand). GitHub CONTRIBUTION GRAPH (heatmap): fetched in `lib/github.ts` (server-only; GraphQL contributionCalendar when `GITHUB_TOKEN` set — exact counts — else parses the public /users/{u}/contributions HTML for data-date/data-level; graceful null); rendered by `components/site/contribution-graph.tsx` (presentational, client-safe) at the bottom of the Journey right column via a `contributions` prop from page.tsx. Cell colors = primary opacity scale, tokens only. Public graph counts PUBLIC contributions only — enabling "Include private contributions" in the GitHub profile raises the number |
 | `/services/[slug]` | `app/services/[slug]/page.tsx` | 2 pages from `lib/services.ts` (`custom-software`, `ai-automation`); SSG + metadata |
 | `/work` | `app/work/page.tsx` | ALL projects in a tab-filtered browser (`components/site/work-browser.tsx` — "All" + per-category tabs); homepage Work shows max 6 highlights per category; both use the shared `work-tabs.tsx` pill + uniform `project-cards.tsx` (3-up grid); BottomNav "Work" links here |
 | `/work/[slug]` | `app/work/[slug]/page.tsx` | case studies from the MERGED source (`lib/projects-data.ts`); problem→approach→solution→outcome template; `dynamicParams` renders new DB slugs on demand |

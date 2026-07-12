@@ -12,8 +12,16 @@ export const site = {
     "I help businesses grow by building custom software and AI automation that eliminates manual work and turns operations digital.",
   credibility: "400+ websites & apps shipped",
   socials: {
-    github: "https://github.com/", // TODO: real profile
+    github: "https://github.com/rbrtmstrjr",
     linkedin: "https://www.linkedin.com/", // TODO: real profile
+  },
+  /** Live GitHub commit feed (homepage "still shipping" section) */
+  github: {
+    username: "rbrtmstrjr",
+    /** commits shown in the feed */
+    commitCount: 6,
+    /** repos to hide from the public feed (owner/name, exact match) */
+    ignoreRepos: [] as string[],
   },
   nav: [
     { label: "Services", href: "/#services" },

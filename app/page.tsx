@@ -8,6 +8,11 @@ import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
 import { site } from "@/lib/site";
 import { getVisibleCategories } from "@/lib/projects-data";
+import { getContributions } from "@/lib/github";
+
+// Refresh the static homepage hourly — keeps the GitHub feed current between
+// admin saves (which still revalidate on demand).
+export const revalidate = 3600;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -21,7 +26,10 @@ const jsonLd = {
 };
 
 export default async function Home() {
-  const { projects, categories } = await getVisibleCategories();
+  const [{ projects, categories }, contributions] = await Promise.all([
+    getVisibleCategories(),
+    getContributions(),
+  ]);
 
   return (
     <>
@@ -33,7 +41,7 @@ export default async function Home() {
       <TechMarquee />
       <Services />
       <Work projects={projects} categories={categories} />
-      <Journey />
+      <Journey contributions={contributions} />
       <Process />
       <Testimonials />
       <Contact />

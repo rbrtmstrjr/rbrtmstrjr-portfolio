@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Bell, CheckCircle2, MessageSquareQuote, MessageSquareWarning } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { markAllNotificationsRead } from "@/app/actions/admin-contracts";
 import type { AdminNotificationRow } from "@/lib/contracts-data";
 import { cn } from "@/lib/utils";
@@ -74,7 +75,8 @@ export function NotificationsBell({
           </p>
         </div>
         {notifications.length ? (
-          <ul className="max-h-96 divide-y divide-border overflow-y-auto">
+          <ScrollArea className="max-h-96">
+            <ul className="divide-y divide-border">
             {notifications.map((n) => {
               const Icon = TYPE_ICONS[n.type] ?? Bell;
               return (
@@ -111,7 +113,8 @@ export function NotificationsBell({
                 </li>
               );
             })}
-          </ul>
+            </ul>
+          </ScrollArea>
         ) : (
           <p className="px-4 py-8 text-center text-sm text-muted-foreground">
             Nothing yet — client approvals, change requests, and testimonials land here.
