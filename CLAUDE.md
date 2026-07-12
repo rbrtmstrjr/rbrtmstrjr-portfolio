@@ -165,6 +165,24 @@ renders EMPTY work/tab sections — content requires the env keys (local
   (top bar + mobile header, unread badge, opening marks all read via
   `markAllNotificationsRead`) links each item to its contract. Upgrade SQL:
   `supabase/upgrade-admin-notifications.sql`.
+- **Settings module** (2026-07-12): `/admin/settings` (sidebar footer link) —
+  single-row `public.settings` (id=1) + `milestone_templates`, both
+  RLS-on-no-policies. Data: `lib/settings-data.ts` — `getPublicSettings()`
+  whitelists site-facing fields (contact/socials/domain/availability) with
+  `lib/site.ts` as fallback; `getNotificationEmail()` stays server-only.
+  Consumers migrated: hero availability pulse (prop from page), footer
+  socials/email, contact section email, contact-action recipient,
+  notify-client portal domain. Actions `app/actions/admin-settings.ts`
+  (saveSiteInfo/saveAvailability revalidate the layout; template CRUD).
+  Account section = Supabase Auth via browser client with MANDATORY current-
+  password re-auth before email/password changes; reset flow:
+  login "Forgot password?" → `resetPasswordForEmail` →
+  `/admin/reset-password` (allowlisted in proxy.ts, session arrives via
+  INITIAL_SESSION listener). Contract creation seeds milestones from
+  templates via `seedContractMilestones` (checkbox, default on).
+  Integrations panel = env presence + light pings (Supabase query, Resend
+  /domains, GitHub /user) — never renders secrets. Upgrade SQL:
+  `supabase/upgrade-settings.sql`.
 - **Project details** (2026-07-12): `status`
   (completed | in-progress | just-started — non-completed shows a pulsing badge
   chip on card + case page), optional `year` / `duration` / `role` (case-page

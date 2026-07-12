@@ -9,6 +9,7 @@ import { Contact } from "@/components/sections/contact";
 import { site } from "@/lib/site";
 import { getVisibleCategories } from "@/lib/projects-data";
 import { getContributions } from "@/lib/github";
+import { getPublicSettings } from "@/lib/settings-data";
 
 // Refresh the static homepage hourly — keeps the GitHub feed current between
 // admin saves (which still revalidate on demand).
@@ -26,9 +27,10 @@ const jsonLd = {
 };
 
 export default async function Home() {
-  const [{ projects, categories }, contributions] = await Promise.all([
+  const [{ projects, categories }, contributions, settings] = await Promise.all([
     getVisibleCategories(),
     getContributions(),
+    getPublicSettings(),
   ]);
 
   return (
@@ -37,14 +39,14 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Hero />
+      <Hero availability={settings.availability} />
       <TechMarquee />
       <Services />
       <Work projects={projects} categories={categories} />
       <Journey contributions={contributions} />
       <Process />
       <Testimonials />
-      <Contact />
+      <Contact contactEmail={settings.contactEmail} />
     </>
   );
 }

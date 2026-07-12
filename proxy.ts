@@ -12,12 +12,15 @@ import { NextResponse, type NextRequest } from "next/server";
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isLogin = pathname === "/admin/login";
+  // reset-password must load unauthenticated — the Supabase recovery link
+  // establishes the session client-side after the page mounts
+  const isPublicAdminPage = isLogin || pathname === "/admin/reset-password";
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
     // Unconfigured: only the login page is reachable (it shows a setup notice).
-    return isLogin
+    return isPublicAdminPage
       ? NextResponse.next({ request })
       : NextResponse.redirect(new URL("/admin/login", request.url));
   }
@@ -40,7 +43,7 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && !isLogin) {
+  if (!user && !isPublicAdminPage) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
   if (user && isLogin) {

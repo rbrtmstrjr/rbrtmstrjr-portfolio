@@ -16,6 +16,7 @@ import {
   FileText,
   LayoutDashboard,
   Menu,
+  Settings,
   Target,
   Users,
 } from "lucide-react";
@@ -111,10 +112,32 @@ function ViewSiteLink() {
   );
 }
 
+function SettingsLink({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname();
+  const active = pathname.startsWith("/admin/settings");
+  return (
+    <Button
+      asChild
+      variant="ghost"
+      size="sm"
+      className={cn(
+        "w-full justify-start",
+        active ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "text-muted-foreground"
+      )}
+    >
+      <Link href="/admin/settings" onClick={onNavigate}>
+        <Settings aria-hidden />
+        Settings
+      </Link>
+    </Button>
+  );
+}
+
 /** Mobile drawer footer — the desktop top bar covers theme/sign-out instead. */
-function DrawerFooter() {
+function DrawerFooter({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="space-y-1 border-t border-border pt-4">
+      <SettingsLink onNavigate={onNavigate} />
       <div className="flex items-center gap-1">
         <div className="flex-1">
           <ViewSiteLink />
@@ -183,7 +206,7 @@ export function AdminSidebar({
               <NavList onNavigate={() => setOpen(false)} />
             </div>
             <div className="px-3 pb-4">
-              <DrawerFooter />
+              <DrawerFooter onNavigate={() => setOpen(false)} />
             </div>
           </SheetContent>
         </Sheet>
@@ -197,7 +220,8 @@ export function AdminSidebar({
         <div className="flex flex-1 flex-col overflow-y-auto">
           <NavList />
         </div>
-        <div className="border-t border-border pt-4">
+        <div className="space-y-1 border-t border-border pt-4">
+          <SettingsLink />
           <ViewSiteLink />
         </div>
       </aside>

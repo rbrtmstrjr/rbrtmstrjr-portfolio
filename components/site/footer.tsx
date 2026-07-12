@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { site } from "@/lib/site";
+import { getPublicSettings } from "@/lib/settings-data";
 
 /* Brand icons — removed from lucide 1.x, kept as minimal inline SVGs */
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -19,7 +20,10 @@ function LinkedinIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export function Footer() {
+export async function Footer() {
+  // settings-driven (admin → Settings → Site info) with lib/site.ts fallback
+  const { contactEmail, githubUrl, linkedinUrl } = await getPublicSettings();
+
   return (
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-12 md:flex-row md:items-center md:justify-between">
@@ -30,14 +34,14 @@ export function Footer() {
 
         <div className="flex items-center gap-1">
           <Link
-            href={`mailto:${site.email}`}
+            href={`mailto:${contactEmail}`}
             aria-label="Email"
             className="rounded-md p-2.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <Mail className="size-5" aria-hidden />
           </Link>
           <Link
-            href={site.socials.github}
+            href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
@@ -46,7 +50,7 @@ export function Footer() {
             <GithubIcon className="size-5" />
           </Link>
           <Link
-            href={site.socials.linkedin}
+            href={linkedinUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"

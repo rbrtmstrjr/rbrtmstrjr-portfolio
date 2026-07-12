@@ -10,6 +10,24 @@ import { getSupabaseBrowser } from "@/lib/supabase/browser";
 export function LoginForm() {
   const [error, setError] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
+  const [resetSent, setResetSent] = React.useState(false);
+  const emailRef = React.useRef<HTMLInputElement>(null);
+
+  async function onForgotPassword() {
+    const email = emailRef.current?.value.trim();
+    if (!email) {
+      setError("Type your email above first, then hit Forgot password.");
+      return;
+    }
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+    setError(null);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/admin/reset-password`,
+    });
+    if (resetError) setError(resetError.message);
+    else setResetSent(true);
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,6 +60,7 @@ export function LoginForm() {
           type="email"
           autoComplete="email"
           required
+          ref={emailRef}
           className="h-10"
         />
       </div>
@@ -71,6 +90,19 @@ export function LoginForm() {
           "Sign in"
         )}
       </Button>
+      {resetSent ? (
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          Reset email sent — check your inbox and follow the link.
+        </p>
+      ) : (
+        <button
+          type="button"
+          onClick={onForgotPassword}
+          className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          Forgot password?
+        </button>
+      )}
     </form>
   );
 }

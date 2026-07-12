@@ -6,6 +6,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { getAdminUser } from "@/lib/supabase/server-auth";
 import { Resend } from "resend";
 import { site } from "@/lib/site";
+import { getPublicSettings } from "@/lib/settings-data";
 import {
   contractFormSchema,
   contractFormToRow,
@@ -115,6 +116,30 @@ export async function saveMilestone(input: MilestoneFormInput): Promise<Contract
   const { data, error } = await supabase.from("milestones").insert(row).select("id").single();
   if (error || !data) return { ok: false, error: error?.message ?? "Failed to add milestone." };
   return { ok: true, id: data.id as string };
+}
+
+/** Seed a new contract's milestones from the templates in /admin/settings. */
+export async function seedContractMilestones(contractId: string): Promise<ContractActionResult> {
+  const supabase = await requireAdmin();
+  if (!supabase) return { ok: false, error: "Your session expired — sign in again." };
+
+  const { data: templates, error: readError } = await supabase
+    .from("milestone_templates")
+    .select("title, default_description, sort_order")
+    .order("sort_order", { ascending: true });
+  if (readError) return { ok: false, error: readError.message };
+  if (!templates?.length) return { ok: true, id: contractId };
+
+  const { error } = await supabase.from("milestones").insert(
+    templates.map((t) => ({
+      contract_id: contractId,
+      title: t.title,
+      description: t.default_description,
+      sort_order: t.sort_order,
+    }))
+  );
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, id: contractId };
 }
 
 export async function deleteMilestone(id: string): Promise<ContractActionResult> {
@@ -316,7 +341,9 @@ export async function notifyClient(input: NotifyClientInput): Promise<ContractAc
       ? `${contract.title} — project complete 🎉`
       : `${contract.title} — progress update`;
   const note = parsed.data.note?.trim();
-  const portalUrl = `${site.url}/client/${contract.portal_token}`;
+  // settings-driven domain (with lib/site.ts fallback) so portal links are real
+  const { siteDomain } = await getPublicSettings();
+  const portalUrl = `${siteDomain.replace(/\/$/, "")}/client/${contract.portal_token}`;
 
   // Inline styles + hardcoded brand hex: emails can't read CSS vars (same
   // exception as the OG image).

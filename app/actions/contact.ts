@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { Resend } from "resend";
 import { contactSchema, type ContactInput } from "@/lib/contact-schema";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { getNotificationEmail } from "@/lib/settings-data";
 import { site } from "@/lib/site";
 
 export type ContactResult =
@@ -95,7 +96,8 @@ export async function submitInquiry(input: ContactInput): Promise<ContactResult>
   if (resendKey) {
     try {
       const resend = new Resend(resendKey);
-      const to = process.env.CONTACT_TO_EMAIL ?? site.email;
+      // settings-driven recipient (falls back to env, then lib/site.ts)
+      const to = await getNotificationEmail();
       const from = process.env.CONTACT_FROM_EMAIL ?? "Portfolio <onboarding@resend.dev>";
       const { error } = await resend.emails.send({
         from,

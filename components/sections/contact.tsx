@@ -40,7 +40,7 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export function Contact() {
+export function Contact({ contactEmail = site.email }: { contactEmail?: string }) {
   const [sent, setSent] = React.useState(false);
   const {
     register,
@@ -92,10 +92,10 @@ export function Contact() {
             <p className="mt-10 text-sm text-muted-foreground">
               Prefer email?{" "}
               <Link
-                href={`mailto:${site.email}`}
+                href={`mailto:${contactEmail}`}
                 className="font-medium text-foreground underline underline-offset-4 transition-colors hover:text-primary"
               >
-                {site.email}
+                {contactEmail}
               </Link>
             </p>
           </Reveal>

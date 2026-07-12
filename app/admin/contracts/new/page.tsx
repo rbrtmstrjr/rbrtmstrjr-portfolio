@@ -2,11 +2,13 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ContractForm } from "@/components/admin/contract-form";
 import { getClientRows } from "@/lib/clients-data";
+import { getMilestoneTemplates } from "@/lib/settings-data";
 
 export const metadata = { title: "New contract" };
 
 export default async function NewContractPage() {
-  const clients = (await getClientRows()).map(({ id, name, company }) => ({ id, name, company }));
+  const [clientRows, templates] = await Promise.all([getClientRows(), getMilestoneTemplates()]);
+  const clients = clientRows.map(({ id, name, company }) => ({ id, name, company }));
 
   return (
     <div className="space-y-8">
@@ -25,7 +27,7 @@ export default async function NewContractPage() {
         </p>
       </div>
       {clients.length ? (
-        <ContractForm clients={clients} />
+        <ContractForm clients={clients} templateCount={templates.length} />
       ) : (
         <div className="rounded-lg border-l-2 border-primary bg-primary/5 px-4 py-3 text-sm leading-relaxed">
           Contracts belong to a client —{" "}

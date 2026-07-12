@@ -235,6 +235,39 @@ create table if not exists public.contract_files (
 
 alter table public.contract_files enable row level security;
 
+-- ---------------------------------------------------------------------------
+-- App settings — single-row config editable in /admin/settings. RLS with NO
+-- policies: reads/writes go through service-role server code; the public site
+-- receives ONLY whitelisted fields via lib/settings-data.ts (with lib/site.ts
+-- values as fallback). notification_email etc. never leave the server.
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.settings (
+  id integer primary key default 1 check (id = 1),
+  contact_email text,
+  notification_email text,
+  github_url text,
+  linkedin_url text,
+  site_domain text,
+  availability_status text not null default 'available'
+    check (availability_status in ('available', 'booked', 'unavailable')),
+  availability_message text,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.settings enable row level security;
+
+-- Reusable default milestones seeded into new contracts.
+create table if not exists public.milestone_templates (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  default_description text,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table public.milestone_templates enable row level security;
+
 -- Public API may read published rows only; all writes go through the
 -- service-role server actions (no anon/authenticated write policies).
 alter table public.projects enable row level security;

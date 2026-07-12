@@ -27,6 +27,7 @@ import {
 import {
   deleteContractFile,
   saveContract,
+  seedContractMilestones,
   uploadContractFile,
 } from "@/app/actions/admin-contracts";
 import type { ContractFileRow, ContractRow } from "@/lib/contracts-data";
@@ -69,16 +70,20 @@ export function ContractForm({
   initial,
   clients,
   files = [],
+  templateCount = 0,
 }: {
   initial?: ContractRow;
   clients: { id: string; name: string; company: string | null }[];
   /** already-uploaded documents (edit mode) */
   files?: ContractFileRow[];
+  /** milestone templates available (Settings → Contract defaults) */
+  templateCount?: number;
 }) {
   const router = useRouter();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [pendingFiles, setPendingFiles] = React.useState<File[]>([]);
   const [removingId, setRemovingId] = React.useState<string | null>(null);
+  const [seedTemplates, setSeedTemplates] = React.useState(true);
 
   function addFiles(list: FileList | null) {
     if (!list) return;
@@ -133,6 +138,12 @@ export function ContractForm({
     if (!result.ok) {
       toast.error(result.error);
       return;
+    }
+
+    // seed default milestones on create (Settings → Contract defaults)
+    if (!initial && seedTemplates && templateCount > 0) {
+      const seeded = await seedContractMilestones(result.id);
+      if (!seeded.ok) toast.error(seeded.error);
     }
 
     // upload attachments after the contract exists (create) or immediately (edit)
@@ -316,6 +327,27 @@ export function ContractForm({
           </div>
         ))}
       </section>
+
+      {!initial && templateCount > 0 ? (
+        <section className="border-t border-border pt-8">
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors has-checked:border-primary/40 has-checked:bg-primary/[0.04]">
+            <input
+              type="checkbox"
+              checked={seedTemplates}
+              onChange={(e) => setSeedTemplates(e.target.checked)}
+              className="mt-0.5 size-4 accent-primary"
+            />
+            <span className="min-w-0">
+              <span className="block text-sm font-medium">
+                Start from default milestones ({templateCount})
+              </span>
+              <span className="block text-xs leading-relaxed text-muted-foreground">
+                Seeds the phases from Settings → Contract defaults — edit them afterwards.
+              </span>
+            </span>
+          </label>
+        </section>
+      ) : null}
 
       <section className="space-y-4 border-t border-border pt-8">
         <div>

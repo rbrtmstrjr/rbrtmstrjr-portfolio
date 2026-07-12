@@ -16,7 +16,44 @@ const enter = (delay: number) => ({
   transition: { duration: 0.7, ease: EASE_OUT, delay },
 });
 
-export function Hero() {
+export type HeroAvailability = {
+  status: "available" | "booked" | "unavailable";
+  message: string | null;
+};
+
+/** Settings-driven availability pulse (admin → Settings → Availability). */
+function AvailabilityPill({ availability }: { availability: HeroAvailability }) {
+  const { status, message } = availability;
+  const label =
+    message ||
+    (status === "available"
+      ? "Available for new projects"
+      : status === "booked"
+        ? "Currently booked — inquiries welcome"
+        : "Not taking new projects right now");
+
+  return (
+    <span className="flex items-center gap-2.5 text-sm text-muted-foreground">
+      <span className="relative flex size-2" aria-hidden>
+        {status === "available" ? (
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60 motion-reduce:animate-none" />
+        ) : null}
+        <span
+          className={`relative inline-flex size-2 rounded-full ${
+            status === "available" ? "bg-primary" : "bg-muted-foreground/50"
+          }`}
+        />
+      </span>
+      {label}
+    </span>
+  );
+}
+
+export function Hero({
+  availability = { status: "available", message: null },
+}: {
+  availability?: HeroAvailability;
+}) {
   return (
     <section id="home" className="relative overflow-x-clip">
       {/* fills the full first screen so the stack strip stays below the fold */}
@@ -77,13 +114,7 @@ export function Hero() {
             {...enter(0.9)}
             className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3"
           >
-            <span className="flex items-center gap-2.5 text-sm text-muted-foreground">
-              <span className="relative flex size-2" aria-hidden>
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60 motion-reduce:animate-none" />
-                <span className="relative inline-flex size-2 rounded-full bg-primary" />
-              </span>
-              Available for new projects
-            </span>
+            <AvailabilityPill availability={availability} />
             <span className="text-sm text-muted-foreground">
               <span className="font-display text-lg text-foreground">400+</span>{" "}
               websites &amp; apps shipped across 6+ years
