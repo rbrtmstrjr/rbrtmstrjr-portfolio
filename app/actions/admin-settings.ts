@@ -53,6 +53,9 @@ async function requireAdmin() {
 /** The public site renders these — regenerate after every save. */
 function revalidateSite() {
   revalidatePath("/", "layout");
+  // site_domain feeds the metadata routes too
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/robots.txt");
 }
 
 async function upsertSettings(

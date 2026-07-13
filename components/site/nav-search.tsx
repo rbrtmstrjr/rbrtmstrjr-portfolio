@@ -7,9 +7,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { Briefcase, Hash, Search } from "lucide-react";
+import { getSearchIndex } from "@/app/actions/search-index";
 
-/** Minimal project fields the search needs — built server-side from the
- *  merged (hardcoded + Supabase) list and passed down through the navbar. */
+/** Minimal project fields the search needs — loaded lazily on first focus so
+ *  the layout doesn't have to fetch projects on every route. */
 export type SearchProject = {
   slug: string;
   title: string;
@@ -33,9 +34,22 @@ const SECTIONS: Result[] = [
   { href: "/#contact", label: "Contact", sub: "Start a project", kind: "section" },
 ];
 
-export function NavSearch({ projects }: { projects: SearchProject[] }) {
+export function NavSearch() {
   const [query, setQuery] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [projects, setProjects] = React.useState<SearchProject[]>([]);
+
+  // Fetch the project index once, on first interaction.
+  const requested = React.useRef(false);
+  const loadIndex = () => {
+    if (requested.current) return;
+    requested.current = true;
+    getSearchIndex()
+      .then(setProjects)
+      .catch(() => {
+        requested.current = false; // retry on next focus
+      });
+  };
 
   const index: Result[] = React.useMemo(
     () => [
@@ -85,7 +99,10 @@ export function NavSearch({ projects }: { projects: SearchProject[] }) {
           setQuery(e.target.value);
           setOpen(true);
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          loadIndex();
+          setOpen(true);
+        }}
         onKeyDown={(e) => {
           if (e.key === "Escape") close();
         }}

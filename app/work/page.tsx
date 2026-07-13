@@ -6,6 +6,9 @@ import { Reveal } from "@/components/motion/reveal";
 import { WorkBrowser } from "@/components/site/work-browser";
 import { getVisibleCategories } from "@/lib/projects-data";
 
+// Hourly ISR backstop — admin saves still revalidate on demand.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Work",
   description:

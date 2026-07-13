@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { site } from "@/lib/site";
 
@@ -40,7 +41,8 @@ export type PublicSettings = {
   availability: { status: AvailabilityStatus; message: string | null };
 };
 
-export async function getSettingsRow(): Promise<SettingsRow | null> {
+/** Deduped per request via React cache — layout metadata, page, and footer share one read. */
+export const getSettingsRow = cache(async (): Promise<SettingsRow | null> => {
   const supabase = getSupabaseAdmin();
   if (!supabase) return null;
   const { data, error } = await supabase
@@ -53,7 +55,7 @@ export async function getSettingsRow(): Promise<SettingsRow | null> {
     return null;
   }
   return (data as SettingsRow) ?? null;
-}
+});
 
 export async function getPublicSettings(): Promise<PublicSettings> {
   const row = await getSettingsRow();
@@ -61,7 +63,8 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     contactEmail: row?.contact_email || site.email,
     githubUrl: row?.github_url || site.socials.github,
     linkedinUrl: row?.linkedin_url || site.socials.linkedin,
-    siteDomain: row?.site_domain || site.url,
+    // no trailing slash — callers append paths (`${siteDomain}/work/...`)
+    siteDomain: (row?.site_domain || site.url).replace(/\/+$/, ""),
     availability: {
       status: row?.availability_status ?? "available",
       message: row?.availability_message || null,

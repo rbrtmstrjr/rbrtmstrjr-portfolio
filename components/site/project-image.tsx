@@ -31,6 +31,7 @@ export function ProjectImage({
           fill
           sizes={sizes ?? "(min-width: 768px) 50vw, 100vw"}
           priority={priority}
+          quality={90}
           className="object-cover"
         />
       </div>

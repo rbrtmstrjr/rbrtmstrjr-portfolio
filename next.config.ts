@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // allow higher-fidelity variants for project screenshots (default is 75)
+    qualities: [75, 90],
     // Covers + galleries uploaded through /admin live in Supabase Storage.
     remotePatterns: [
       {

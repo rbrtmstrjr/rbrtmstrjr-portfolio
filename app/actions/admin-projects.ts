@@ -27,6 +27,43 @@ function revalidateProjects(slug?: string) {
   if (slug) revalidatePath(`/work/${slug}`);
 }
 
+/**
+ * Remove storage files the saved row no longer references (removed cover,
+ * deleted gallery rows). Runs AFTER a successful save so a cancelled form can
+ * never orphan the live site's images. Non-fatal on failure.
+ */
+async function pruneProjectMedia(
+  supabase: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
+  slug: string,
+  row: { image: string | null; study: { gallery?: { src?: string }[] } }
+) {
+  try {
+    const { data: files } = await supabase.storage.from(BUCKET).list(slug);
+    if (!files?.length) return;
+
+    const referenced = new Set<string>();
+    const collect = (url?: string | null) => {
+      if (!url) return;
+      const clean = url.split("?")[0];
+      if (clean.includes(`/${BUCKET}/${slug}/`)) {
+        referenced.add(clean.slice(clean.lastIndexOf("/") + 1));
+      }
+    };
+    collect(row.image);
+    for (const shot of row.study.gallery ?? []) collect(shot.src);
+
+    const orphans = files
+      .filter((f) => !referenced.has(f.name))
+      .map((f) => `${slug}/${f.name}`);
+    if (orphans.length) {
+      const { error } = await supabase.storage.from(BUCKET).remove(orphans);
+      if (error) console.warn("[admin-projects] media prune failed:", error.message);
+    }
+  } catch (err) {
+    console.warn("[admin-projects] media prune failed:", err);
+  }
+}
+
 /** Create or update a managed project. Auth is re-verified server-side. */
 export async function saveProject(input: ProjectFormInput): Promise<AdminActionResult> {
   const user = await getAdminUser();
@@ -50,6 +87,7 @@ export async function saveProject(input: ProjectFormInput): Promise<AdminActionR
   if (parsed.data.id) {
     const { error } = await supabase.from("projects").update(row).eq("id", parsed.data.id);
     if (error) return { ok: false, error: friendlyDbError(error.code, error.message) };
+    await pruneProjectMedia(supabase, row.slug, row);
     revalidateProjects(row.slug);
     return { ok: true, id: parsed.data.id };
   }
@@ -62,6 +100,7 @@ export async function saveProject(input: ProjectFormInput): Promise<AdminActionR
   if (error || !data) {
     return { ok: false, error: friendlyDbError(error?.code, error?.message) };
   }
+  await pruneProjectMedia(supabase, row.slug, row);
   revalidateProjects(row.slug);
   return { ok: true, id: data.id as string };
 }

@@ -10,6 +10,46 @@ import { cn } from "@/lib/utils";
 
 const BUCKET = "project-media";
 
+export type UploadResult =
+  | { url: string; kb: number; width: number; height: number; passthrough: boolean }
+  | { error: string };
+
+/** Optimize + upload one file; shared by the single control and bulk gallery add. */
+export async function uploadOptimizedImage(
+  path: string,
+  file: File,
+  maxEdge: number
+): Promise<UploadResult> {
+  const supabase = getSupabaseBrowser();
+  if (!supabase) return { error: "Supabase isn't configured — can't upload." };
+  try {
+    const { blob, width, height, passthrough } = await optimizeToWebp(file, maxEdge);
+    const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
+      upsert: true,
+      contentType: blob.type || "image/webp",
+      cacheControl: "3600",
+    });
+    if (error) return { error: error.message };
+    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    return {
+      url: `${data.publicUrl}?v=${Date.now()}`,
+      kb: Math.round(blob.size / 1024),
+      width,
+      height,
+      passthrough,
+    };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Upload failed." };
+  }
+}
+
+/** Warn when the SOURCE is smaller than the display needs — we never upscale. */
+export function softnessWarning(width: number, maxEdge: number): string | null {
+  const recommended = maxEdge >= 2000 ? 2200 : 1200;
+  if (width >= recommended) return null;
+  return `Source is only ${width}px wide — it may look soft on large/retina screens. Use an original ≥${recommended}px wide if you have one.`;
+}
+
 /**
  * Optimize-on-upload image control. Converts to WebP client-side, upserts to
  * project-media/{path} so replacing never orphans files, and hands the public
@@ -39,29 +79,20 @@ export function ImageUpload({
 
   async function onFile(file: File | undefined) {
     if (!file) return;
-    const supabase = getSupabaseBrowser();
-    if (!supabase) {
-      toast.error("Supabase isn't configured — can't upload.");
-      return;
-    }
     setUploading(true);
-    try {
-      const blob = await optimizeToWebp(file, maxEdge);
-      const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
-        upsert: true,
-        contentType: "image/webp",
-        cacheControl: "3600",
-      });
-      if (error) throw new Error(error.message);
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-      onChange(`${data.publicUrl}?v=${Date.now()}`);
-      toast.success(`${label} uploaded (${Math.round(blob.size / 1024)} KB WebP).`);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed.");
-    } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
+    const result = await uploadOptimizedImage(path, file, maxEdge);
+    if ("error" in result) {
+      toast.error(result.error);
+    } else {
+      onChange(result.url);
+      toast.success(
+        `${label} uploaded — ${result.width}×${result.height}, ${result.kb} KB${result.passthrough ? " (original kept, no re-encode)" : ""}.`
+      );
+      const warning = softnessWarning(result.width, maxEdge);
+      if (warning) toast.warning(warning, { duration: 8000 });
     }
+    setUploading(false);
+    if (inputRef.current) inputRef.current.value = "";
   }
 
   return (

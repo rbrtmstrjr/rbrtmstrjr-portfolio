@@ -15,23 +15,23 @@ import { getPublicSettings } from "@/lib/settings-data";
 // admin saves (which still revalidate on demand).
 export const revalidate = 3600;
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: site.name,
-  description: site.description,
-  url: site.url,
-  email: site.email,
-  founder: { "@type": "Person", name: site.name },
-  knowsAbout: ["Custom software", "Web app development", "AI automation", "Web design"],
-};
-
 export default async function Home() {
   const [{ projects, categories }, contributions, settings] = await Promise.all([
     getVisibleCategories(),
     getContributions(),
     getPublicSettings(),
   ]);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: site.name,
+    description: site.description,
+    url: settings.siteDomain,
+    email: settings.contactEmail,
+    founder: { "@type": "Person", name: site.name },
+    knowsAbout: ["Custom software", "Web app development", "AI automation", "Web design"],
+  };
 
   return (
     <>

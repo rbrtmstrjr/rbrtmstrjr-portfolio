@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowUpRight, Loader2, Plus, Save, Sparkles, Trash2 } from "lucide-react";
+import { ArrowUpRight, ImagePlus, Loader2, Plus, Save, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,11 @@ import {
 } from "@/components/ui/select";
 import { WindowCard } from "@/components/ui/window-card";
 import { ProjectImage } from "@/components/site/project-image";
-import { ImageUpload } from "@/components/admin/image-upload";
+import {
+  ImageUpload,
+  softnessWarning,
+  uploadOptimizedImage,
+} from "@/components/admin/image-upload";
 import {
   COVER_MAX_EDGE,
   GALLERY_MAX_EDGE,
@@ -219,6 +223,8 @@ export function ProjectForm({
   });
 
   const gallery = useFieldArray({ control, name: "gallery" });
+  const bulkInputRef = React.useRef<HTMLInputElement>(null);
+  const [bulkUploading, setBulkUploading] = React.useState(false);
   const values = watch();
   const slugOk = SLUG_RE.test(values.slug ?? "");
   const uploadHint = slugOk ? undefined : "Set a valid slug first — uploads are filed under it.";
@@ -228,6 +234,46 @@ export function ProjectForm({
   React.useEffect(() => {
     if (!slugEdited) setValue("slug", slugify(title ?? ""), { shouldValidate: false });
   }, [title, slugEdited, setValue]);
+
+  /** "screenshot_pos-register.png" → "screenshot pos register" */
+  function altFromFilename(name: string) {
+    const base = name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+    return base.length >= 3 ? base : "Project screenshot";
+  }
+
+  async function onBulkGallery(list: FileList | null) {
+    if (!list?.length) return;
+    if (!slugOk) {
+      toast.error("Set a valid slug first — uploads are filed under it.");
+      return;
+    }
+    setBulkUploading(true);
+    let added = 0;
+    let softWarned = false;
+    for (const file of Array.from(list)) {
+      const path = `${values.slug}/gallery-${gallery.fields.length + added + 1}-${Date.now().toString(36)}.webp`;
+      const result = await uploadOptimizedImage(path, file, GALLERY_MAX_EDGE);
+      if ("error" in result) {
+        toast.error(`${file.name}: ${result.error}`);
+        continue;
+      }
+      gallery.append({ src: result.url, alt: altFromFilename(file.name), caption: "" });
+      added++;
+      if (!softWarned && softnessWarning(result.width, GALLERY_MAX_EDGE)) softWarned = true;
+    }
+    if (added) {
+      toast.success(
+        `${added} image${added === 1 ? "" : "s"} added to the gallery — tidy up the alt texts, then save.`
+      );
+      if (softWarned) {
+        toast.warning("Some sources were small and may look soft — larger originals help.", {
+          duration: 8000,
+        });
+      }
+    }
+    setBulkUploading(false);
+    if (bulkInputRef.current) bulkInputRef.current.value = "";
+  }
 
   async function onSubmit(parsed: ProjectFormValues) {
     const result = await saveProject({ ...parsed, id: initial?.id });
@@ -556,17 +602,44 @@ export function ProjectForm({
 
           {/* gallery */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <Label>Gallery</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => gallery.append({ src: "", alt: "", caption: "" })}
-              >
-                <Plus aria-hidden />
-                Add image
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={bulkUploading || !slugOk}
+                  title={slugOk ? undefined : "Set a valid slug first"}
+                  onClick={() => bulkInputRef.current?.click()}
+                >
+                  {bulkUploading ? (
+                    <Loader2 className="animate-spin" aria-hidden />
+                  ) : (
+                    <ImagePlus aria-hidden />
+                  )}
+                  Add images
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground"
+                  onClick={() => gallery.append({ src: "", alt: "", caption: "" })}
+                >
+                  <Plus aria-hidden />
+                  Blank row
+                </Button>
+              </div>
+              <input
+                ref={bulkInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                className="sr-only"
+                aria-label="Add multiple gallery images"
+                onChange={(e) => onBulkGallery(e.target.files)}
+              />
             </div>
             {gallery.fields.length === 0 ? (
               <p className="text-xs text-muted-foreground">
@@ -595,7 +668,9 @@ export function ProjectForm({
                   name={`gallery.${i}.src`}
                   render={({ field: f }) => (
                     <ImageUpload
-                      path={`${values.slug || "unsaved"}/gallery-${i + 1}.webp`}
+                      // unique name per upload — no cross-row overwrites; the
+                      // save-time prune removes superseded files
+                      path={`${values.slug || "unsaved"}/gallery-${i + 1}-${Date.now().toString(36)}.webp`}
                       maxEdge={GALLERY_MAX_EDGE}
                       value={f.value || undefined}
                       onChange={f.onChange}

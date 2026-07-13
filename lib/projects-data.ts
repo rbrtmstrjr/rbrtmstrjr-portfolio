@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import type { Category, Project, ProjectCategory, ProjectStatus } from "@/lib/projects";
 
@@ -118,13 +119,13 @@ export async function getProjectRow(id: string): Promise<ProjectRow | null> {
   return (data as ProjectRow) ?? null;
 }
 
-/** All published projects, in sort order. */
-export async function getAllProjects(): Promise<Project[]> {
+/** All published projects, in sort order — deduped per request via React cache. */
+export const getAllProjects = cache(async (): Promise<Project[]> => {
   const rows = await fetchRows(false);
   return rows.map(rowToProject);
-}
+});
 
-export async function getMergedProject(slug: string): Promise<Project | undefined> {
+export async function getProjectBySlug(slug: string): Promise<Project | undefined> {
   const all = await getAllProjects();
   return all.find((p) => p.slug === slug);
 }

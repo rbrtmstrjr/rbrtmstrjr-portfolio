@@ -108,7 +108,7 @@ export function FlagshipCard({ project }: { project: Project }) {
             src={project.image}
             alt={`${project.title} preview`}
             label={project.title}
-            className="aspect-[16/10] h-full w-full transition-transform duration-500 ease-[var(--ease-out-quart)] group-hover:scale-[1.03] md:aspect-auto"
+            className="aspect-[16/10] w-full transition-transform duration-500 ease-[var(--ease-out-quart)] group-hover:scale-[1.03] md:aspect-auto md:h-full"
           />
         </div>
       </div>

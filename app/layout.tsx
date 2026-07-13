@@ -7,8 +7,9 @@ import { BottomNav } from "@/components/site/bottom-nav";
 import { ScrollGuide } from "@/components/site/scroll-guide";
 import { SiteChrome } from "@/components/site/site-chrome";
 import { Footer } from "@/components/site/footer";
+import { AuthRedirectToast } from "@/components/site/auth-redirect-toast";
 import { site } from "@/lib/site";
-import { getAllProjects } from "@/lib/projects-data";
+import { getPublicSettings } from "@/lib/settings-data";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -30,48 +31,44 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: {
-    default: `${site.name} — ${site.role}`,
-    template: `%s — ${site.name}`,
-  },
-  description: site.description,
-  keywords: [
-    "custom software",
-    "web app development",
-    "AI automation",
-    "business software",
-    "freelance software engineer",
-  ],
-  openGraph: {
-    type: "website",
-    url: site.url,
-    siteName: site.name,
-    title: `${site.name} — ${site.role}`,
+export async function generateMetadata(): Promise<Metadata> {
+  // Domain comes from /admin/settings (falls back to lib/site.ts).
+  const { siteDomain } = await getPublicSettings();
+  return {
+    metadataBase: new URL(siteDomain),
+    title: {
+      default: `${site.name} — ${site.role}`,
+      template: `%s — ${site.name}`,
+    },
     description: site.description,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.name} — ${site.role}`,
-    description: site.description,
-  },
-  robots: { index: true, follow: true },
-};
+    keywords: [
+      "custom software",
+      "web app development",
+      "AI automation",
+      "business software",
+      "freelance software engineer",
+    ],
+    openGraph: {
+      type: "website",
+      url: siteDomain,
+      siteName: site.name,
+      title: `${site.name} — ${site.role}`,
+      description: site.description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${site.name} — ${site.role}`,
+      description: site.description,
+    },
+    robots: { index: true, follow: true },
+  };
+}
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Merged (hardcoded + managed) list feeds the nav search on every page.
-  const searchProjects = (await getAllProjects()).map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    client: p.client,
-    category: p.category,
-  }));
-
   return (
     <html
       lang="en"
@@ -86,8 +83,9 @@ export default async function RootLayout({
           Skip to content
         </a>
         <Providers>
+          <AuthRedirectToast />
           <SiteChrome>
-            <Navbar searchProjects={searchProjects} />
+            <Navbar />
           </SiteChrome>
           <main id="main" className="flex-1">
             {children}

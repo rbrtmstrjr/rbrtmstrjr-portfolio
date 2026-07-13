@@ -64,7 +64,7 @@ which can't read CSS vars.
 | `/` | `app/page.tsx` | Section order: Hero → TechMarquee → Services → Work → Journey (contribution graph inside) → Process → Testimonials → Contact; `revalidate = 3600` (hourly ISR keeps the GitHub graph fresh; admin saves still revalidate on demand). GitHub CONTRIBUTION GRAPH (heatmap): fetched in `lib/github.ts` (server-only; GraphQL contributionCalendar when `GITHUB_TOKEN` set — exact counts — else parses the public /users/{u}/contributions HTML for data-date/data-level; graceful null); rendered by `components/site/contribution-graph.tsx` (presentational, client-safe) at the bottom of the Journey right column via a `contributions` prop from page.tsx. Cell colors = primary opacity scale, tokens only. Public graph counts PUBLIC contributions only — enabling "Include private contributions" in the GitHub profile raises the number |
 | `/services/[slug]` | `app/services/[slug]/page.tsx` | 2 pages from `lib/services.ts` (`custom-software`, `ai-automation`); SSG + metadata |
 | `/work` | `app/work/page.tsx` | ALL projects in a tab-filtered browser (`components/site/work-browser.tsx` — "All" + per-category tabs); homepage Work shows max 6 highlights per category; both use the shared `work-tabs.tsx` pill + uniform `project-cards.tsx` (3-up grid); BottomNav "Work" links here |
-| `/work/[slug]` | `app/work/[slug]/page.tsx` | case studies from the MERGED source (`lib/projects-data.ts`); problem→approach→solution→outcome template; `dynamicParams` renders new DB slugs on demand |
+| `/work/[slug]` | `app/work/[slug]/page.tsx` | case studies from `lib/projects-data.ts` (`getProjectBySlug`); problem→approach→solution→outcome template; `dynamicParams` renders new DB slugs on demand; hourly `revalidate` backstop (same on `/work`) |
 | `/admin` (overview), `/admin/projects` (+ `new`, `[id]/edit`), `/admin/categories`, `/admin/clients` (+ `new`, `[id]`, `[id]/edit`), `/admin/contracts` (+ `new`, `[id]`, `[id]/edit`), `/admin/login` | `app/admin/*` | self-hosted CMS in a SIDEBAR shell (`components/admin/admin-sidebar.tsx` — desktop aside + mobile Sheet drawer; sticky top-right theme/sign-out via `AdminTopbar`; Leads/Payments/Reports shown as "soon"), force-dynamic, noindex, guarded by `proxy.ts` (see Admin CMS) |
 | `/client/[token]` | `app/client/[token]/page.tsx` | CLIENT PORTAL — public but secret-token-gated, force-dynamic, noindex, chrome hidden via `site-chrome.tsx` (see Contracts) |
 | `/sitemap.xml`, `/robots.txt`, OG image, `icon.svg`, `not-found` | `app/*` | sitemap includes services + merged work pages |
@@ -81,7 +81,8 @@ migrated to Supabase and deleted; `lib/projects.ts` is now TYPES ONLY
 (Project/Category/ProjectStatus + `sortForDisplay`). All public reads go
 through `lib/projects-data.ts` → `getAllProjects()` / `getVisibleCategories()`
 (homepage Work, `/work`, `/work/[slug]`, service related-work, nav search via
-root layout, sitemap). No Supabase env → the build stays green but the site
+the `getSearchIndex` server action, sitemap). No Supabase env → the build
+stays green but the site
 renders EMPTY work/tab sections — content requires the env keys (local
 `.env.local` + Vercel).
 
@@ -95,7 +96,9 @@ renders EMPTY work/tab sections — content requires the env keys (local
   via service role, then `revalidatePath("/", "layout")` + sitemap + the slug's
   work page — saves go live without a redeploy (ISR; Vercel required).
 - **Uploads**: `components/admin/image-upload.tsx` + `lib/admin/optimize-image.ts`
-  — client-side canvas → WebP (cover ≤1600px, gallery ≤1200px, q0.8), upsert to
+  — client-side canvas → WebP (cover ≤2560px, gallery ≤1600px, q0.85,
+  imageSmoothingQuality high — retina-sized masters; next/image serves
+  quality=85 via `images.qualities`), upsert to
   the public `project-media` bucket at `{slug}/cover.webp` / `{slug}/gallery-{n}.webp`,
   store the public URL (cache-busted `?v=`). `next.config.ts` allows
   `*.supabase.co` for next/image. Delete removes the row + its media folder.
@@ -174,8 +177,14 @@ renders EMPTY work/tab sections — content requires the env keys (local
   socials/email, contact section email, contact-action recipient,
   notify-client portal domain. Actions `app/actions/admin-settings.ts`
   (saveSiteInfo/saveAvailability revalidate the layout; template CRUD).
-  Account section = Supabase Auth via browser client with MANDATORY current-
-  password re-auth before email/password changes; reset flow:
+  Account section = ONE combined form (new email and/or new password, blank =
+  keep) via Supabase Auth browser client with MANDATORY current-password
+  re-auth; email change = secure double-confirm (links to BOTH inboxes) with
+  `emailRedirectTo` → /admin/settings — the target must be in the Supabase
+  Auth redirect-URL allowlist or it falls back to the Site URL;
+  `components/site/auth-redirect-toast.tsx` (mounted in the root layout)
+  surfaces the `?message=`/`#error_description=` Supabase appends wherever the
+  link lands, then cleans the URL; reset flow:
   login "Forgot password?" → `resetPasswordForEmail` →
   `/admin/reset-password` (allowlisted in proxy.ts, session arrives via
   INITIAL_SESSION listener). Contract creation seeds milestones from
@@ -238,13 +247,19 @@ renders EMPTY work/tab sections — content requires the env keys (local
   honeypot, project-type Select, loading/success states, "What happens next".
 
 ### Data (`lib/`)
-- **site.ts** — identity/config: name, `wordmark: "RM."`, email, url (TODO: real
-  domain), socials (TODO), credibility copy.
+- **site.ts** — identity/config: name, `wordmark: "RM."`, email, url (FALLBACK
+  only — /admin/settings "Site domain" overrides it for metadataBase, sitemap,
+  robots, JSON-LD, portal links; TODO real domain), `tagline` (OG image copy),
+  socials (TODO), credibility copy.
 - **projects.ts** — TYPES ONLY (Project, Category, ProjectStatus,
   `sortForDisplay`). All content lives in Supabase and is read through
   **projects-data.ts** (`getAllProjects()` / `getVisibleCategories()` /
-  `getMergedProject()`, server-only). Adding a project in /admin updates card,
-  tabs, case page, sitemap, and search — no code changes, no redeploy.
+  `getProjectBySlug()`, server-only; `getAllProjects` + `getSettingsRow` are
+  wrapped in React `cache()` for per-request dedupe). Adding a project in
+  /admin updates card, tabs, case page, sitemap, and search — no code changes,
+  no redeploy. Nav search loads its index LAZILY on first focus via the
+  `getSearchIndex` server action (`app/actions/search-index.ts`) — the root
+  layout does NOT fetch projects.
 - **services.ts** — 2 services: card fields + `detail` (intro, 6 features,
   fit-for checklist, related-projects categoryKey).
 - **contact-schema.ts** — shared zod schema (client+server), honeypot field.

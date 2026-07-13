@@ -64,7 +64,7 @@ export default function OpengraphImage() {
               lineHeight: 1.35,
             }}
           >
-            I turn manual work into software that grows your business.
+            {site.tagline}
           </div>
         </div>
 

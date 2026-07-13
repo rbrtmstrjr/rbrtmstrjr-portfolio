@@ -7,9 +7,16 @@ export const site = {
   wordmark: "RM.",
   role: "Custom Software & AI Automation",
   email: "robertmaestro09@gmail.com",
-  url: "https://robertmaestro.dev", // TODO: replace with the real domain before deploy
+  /**
+   * Fallback domain — /admin/settings "Site domain" overrides it everywhere
+   * (metadata, sitemap, robots, JSON-LD, portal links).
+   * TODO: replace with the real domain before deploy.
+   */
+  url: "https://robertmaestro.dev",
   description:
     "I help businesses grow by building custom software and AI automation that eliminates manual work and turns operations digital.",
+  /** Short pitch line for the OG share image. */
+  tagline: "I turn manual work into software that grows your business.",
   credibility: "400+ websites & apps shipped",
   socials: {
     github: "https://github.com/rbrtmstrjr",

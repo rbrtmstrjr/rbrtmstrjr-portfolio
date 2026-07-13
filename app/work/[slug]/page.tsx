@@ -3,11 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getAllProjects, getMergedProject } from "@/lib/projects-data";
-import { ProjectImage } from "@/components/site/project-image";
-import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
+import { getAllProjects, getProjectBySlug } from "@/lib/projects-data";
+import { CaseShowcase } from "@/components/site/case-showcase";
+import { Reveal } from "@/components/motion/reveal";
 
 type Params = { slug: string };
+
+// Hourly ISR backstop — admin saves still revalidate on demand.
+export const revalidate = 3600;
 
 // New managed slugs published after a deploy render on demand (ISR) —
 // generateStaticParams covers everything known at build time.
@@ -22,7 +25,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getMergedProject(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return {};
   return {
     title: `${project.title} — Case study`,
@@ -143,15 +146,12 @@ export default async function CaseStudyPage({
         </div>
       </Reveal>
 
-      {/* hero image */}
-      <Reveal delay={0.1}>
-        <ProjectImage
-          src={project.image}
-          alt={`${project.title} — primary screenshot`}
-          label={project.title}
-          className="mt-12 aspect-[16/9] rounded-2xl border border-border"
-          sizes="(min-width: 1152px) 1104px, 100vw"
-          priority
+      {/* showcase — cover + gallery as one presentation deck */}
+      <Reveal delay={0.1} className="mt-12">
+        <CaseShowcase
+          cover={project.image}
+          gallery={project.study.gallery ? [...project.study.gallery] : []}
+          title={project.title}
         />
       </Reveal>
 
@@ -190,28 +190,6 @@ export default async function CaseStudyPage({
         </Reveal>
       ) : null}
 
-      {/* gallery */}
-      {project.study.gallery?.length ? (
-        <RevealGroup className="mt-20 grid gap-4 sm:grid-cols-2 md:gap-6" staggerChildren={0.1}>
-          {project.study.gallery.map((shot, i) => (
-            <RevealItem key={shot.alt} as="div" className={i === 0 ? "sm:col-span-2" : undefined}>
-              <figure>
-                <ProjectImage
-                  src={shot.src}
-                  alt={shot.alt}
-                  label={String(i + 1)}
-                  className={`rounded-2xl border border-border ${i === 0 ? "aspect-[16/9]" : "aspect-[16/10]"}`}
-                />
-                {shot.caption ? (
-                  <figcaption className="mt-2 text-xs text-muted-foreground">
-                    {shot.caption}
-                  </figcaption>
-                ) : null}
-              </figure>
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      ) : null}
 
       {/* CTA + next project */}
       <Reveal>

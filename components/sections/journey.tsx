@@ -36,9 +36,12 @@ export function Journey({ contributions }: { contributions?: Contributions | nul
   return (
     <section id="journey" className="scroll-mt-24">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-36">
+        {/* min-w-0 on both columns — grid items default to min-width:auto, and
+            the contribution graph's intrinsic width (~600px) would otherwise
+            stretch the whole page past the viewport on mobile */}
         <div className="grid items-start gap-14 lg:grid-cols-2 lg:gap-20">
           {/* left — hero-sized portrait on top, story beneath */}
-          <div>
+          <div className="min-w-0">
             <Reveal>
               <div className="mx-auto w-full max-w-lg lg:mx-0 lg:max-w-none">
                 {/* same comet animation as the hero, running over this artwork */}
@@ -63,7 +66,7 @@ export function Journey({ contributions }: { contributions?: Contributions | nul
           </div>
 
           {/* right — vertical timeline + live contribution proof */}
-          <div className="lg:pt-4">
+          <div className="min-w-0 lg:pt-4">
             <RevealGroup as="ol" staggerChildren={0.16}>
             {stages.map((stage, i) => (
               <RevealItem key={stage.title} as="li" className="relative pl-10 pb-12 last:pb-0">

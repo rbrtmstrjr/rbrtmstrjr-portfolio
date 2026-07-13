@@ -14,9 +14,14 @@ export const dynamic = "force-dynamic";
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getAdminUser();
 
-  // Unauthenticated (login page): no shell, just the centered card.
+  // Unauthenticated (login / reset pages): no shell — the card sits dead-center
+  // of the full viewport.
   if (!user) {
-    return <div className="mx-auto w-full max-w-6xl px-6">{children}</div>;
+    return (
+      <div className="flex min-h-dvh w-full flex-col items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md">{children}</div>
+      </div>
+    );
   }
 
   const notifications = await getAdminNotifications();
