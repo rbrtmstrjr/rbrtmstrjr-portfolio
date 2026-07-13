@@ -46,7 +46,11 @@ export default async function Home() {
       <Journey contributions={contributions} />
       <Process />
       <Testimonials />
-      <Contact contactEmail={settings.contactEmail} />
+      <Contact
+        contactEmail={settings.contactEmail}
+        githubUrl={settings.githubUrl}
+        linkedinUrl={settings.linkedinUrl}
+      />
     </>
   );
 }

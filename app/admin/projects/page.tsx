@@ -34,8 +34,8 @@ function Chip({
 
 function ManagedRow({ row }: { row: ProjectRow }) {
   return (
-    <li className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
-      <div className="min-w-0 flex-1">
+    <li className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:gap-x-4">
+      <div className="min-w-0 sm:flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <span className="truncate text-sm font-semibold">{row.title}</span>
           {row.flagship ? (
@@ -149,8 +149,8 @@ export default async function AdminProjectsPage() {
         {categoryRows.length ? (
           <ul className="divide-y divide-border">
             {categoryRows.map((row) => (
-              <li key={row.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
-                <div className="min-w-0 flex-1">
+              <li key={row.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:gap-x-4">
+                <div className="min-w-0 sm:flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm font-semibold">{row.key}</span>
                     <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">

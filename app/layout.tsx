@@ -6,7 +6,6 @@ import { Navbar } from "@/components/site/navbar";
 import { BottomNav } from "@/components/site/bottom-nav";
 import { ScrollGuide } from "@/components/site/scroll-guide";
 import { SiteChrome } from "@/components/site/site-chrome";
-import { Footer } from "@/components/site/footer";
 import { AuthRedirectToast } from "@/components/site/auth-redirect-toast";
 import { site } from "@/lib/site";
 import { getPublicSettings } from "@/lib/settings-data";
@@ -91,7 +90,6 @@ export default function RootLayout({
             {children}
           </main>
           <SiteChrome>
-            <Footer />
             <BottomNav />
             <ScrollGuide />
           </SiteChrome>

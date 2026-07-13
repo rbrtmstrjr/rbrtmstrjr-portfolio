@@ -136,7 +136,7 @@ export default async function CaseStudyPage({
             ))}
           </div>
           {project.study.link ? (
-            <Button asChild variant="outline" size="sm" className="ml-auto">
+            <Button asChild size="sm" className="ml-auto">
               <Link href={project.study.link.href} target="_blank" rel="noopener noreferrer">
                 {project.study.link.label}
                 <ArrowUpRight className="size-4" aria-hidden />

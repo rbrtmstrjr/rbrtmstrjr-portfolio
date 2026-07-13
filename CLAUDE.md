@@ -12,7 +12,7 @@ demo. Original full spec lives in `build-prompt` at the repo root.
 - **Tailwind CSS v4** + **shadcn/ui** (radix preset, CLI v4) — components in `components/ui/`
 - **framer-motion v12** for all JS-driven motion
 - **react-hook-form + zod v4** (contact form), **Resend** (email), **Supabase** (storage)
-- **simple-icons** (brand icons in the tech marquee), **lucide-react v1** (UI icons — NO brand icons; GitHub/LinkedIn are inline SVGs in `footer.tsx`)
+- **simple-icons** (brand icons in the tech marquee), **lucide-react v1** (UI icons — NO brand icons; GitHub/LinkedIn are inline SVGs in `sections/contact.tsx`)
 - Deploy target: Vercel. Fully static (SSG) — 19 pages.
 
 ### Commands
@@ -70,7 +70,9 @@ which can't read CSS vars.
 | `/sitemap.xml`, `/robots.txt`, OG image, `icon.svg`, `not-found` | `app/*` | sitemap includes services + merged work pages |
 
 Global chrome (rendered in `app/layout.tsx`): skip-link → `Navbar` → main →
-`Footer` → `BottomNav` → `ScrollGuide`. Navbar/Footer/dock/rail are wrapped in
+`BottomNav` → `ScrollGuide`. NO site footer (removed 2026-07-13 — contact
+email + GitHub/LinkedIn socials live in the homepage Contact section's
+"Reach me directly" block instead). Navbar/dock/rail are wrapped in
 `components/site/site-chrome.tsx` (client pathname gate) so they don't render
 under `/admin`, which has its own shell.
 
@@ -173,8 +175,8 @@ renders EMPTY work/tab sections — content requires the env keys (local
   RLS-on-no-policies. Data: `lib/settings-data.ts` — `getPublicSettings()`
   whitelists site-facing fields (contact/socials/domain/availability) with
   `lib/site.ts` as fallback; `getNotificationEmail()` stays server-only.
-  Consumers migrated: hero availability pulse (prop from page), footer
-  socials/email, contact section email, contact-action recipient,
+  Consumers migrated: hero availability pulse (prop from page), contact
+  section email + GitHub/LinkedIn socials, contact-action recipient,
   notify-client portal domain. Actions `app/actions/admin-settings.ts`
   (saveSiteInfo/saveAvailability revalidate the layout; template CRUD).
   Account section = ONE combined form (new email and/or new password, blank =
@@ -208,12 +210,11 @@ renders EMPTY work/tab sections — content requires the env keys (local
 - **nav-search.tsx** — functional search over projects + sections, combobox ARIA, dropdown results.
 - **bottom-nav.tsx** — floating dock (Home/Services/Work/Contact), icon+label,
   scroll-spied active pill (IntersectionObserver on section ids; hero has `id="home"`).
-  Inactive items collapse to icons on mobile. Footer has extra `pb-24` clearance.
+  Inactive items collapse to icons on mobile.
 - **scroll-guide.tsx** — right-edge futuristic rail: 3-digit percent readout,
   fill line, glowing dot, 6 ticks, vertical SCROLL label. Desktop only, decorative.
 - **theme-toggle.tsx** — CSS-swap sun/moon (no mounted-state; avoids the
   react-hooks/set-state-in-effect lint rule).
-- **footer.tsx** — wordmark, socials (inline brand SVGs), copyright, Next.js nod.
 
 ### Homepage sections (`components/sections/`)
 - **hero.tsx** — full first screen (`min-h-svh`, marquee stays below fold).
