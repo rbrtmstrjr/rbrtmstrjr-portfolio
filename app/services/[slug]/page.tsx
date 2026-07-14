@@ -208,7 +208,7 @@ export default async function ServicePage({
             <div>
               <h2 className="text-2xl md:text-3xl">Sounds like your business?</h2>
               <p className="mt-2 max-w-md text-muted-foreground">
-                Tell me what&apos;s eating your team&apos;s time — I&apos;ll tell you
+                Tell me what&apos;s eating your team&apos;s time. I&apos;ll tell you
                 honestly whether this can fix it.
               </p>
             </div>

@@ -14,7 +14,7 @@ export const site = {
    */
   url: "https://robertmaestro.dev",
   description:
-    "I help businesses grow by building custom software and AI automation that eliminates manual work and turns operations digital.",
+    "I build custom software and AI automation for businesses, so the manual, repetitive work runs itself and your team can get back to growing.",
   /** Short pitch line for the OG share image. */
   tagline: "I turn manual work into software that grows your business.",
   credibility: "400+ websites & apps shipped",

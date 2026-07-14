@@ -9,6 +9,7 @@ import { SiteChrome } from "@/components/site/site-chrome";
 import { AuthRedirectToast } from "@/components/site/auth-redirect-toast";
 import { site } from "@/lib/site";
 import { getPublicSettings } from "@/lib/settings-data";
+import { buildAccentInitScript, getPublicPaletteMenu } from "@/lib/palettes-data";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -63,11 +64,26 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // VISITOR-scoped accent: the admin curates a palette MENU (Supabase);
+  // each visitor's pick lives in their own localStorage. Two pieces, both
+  // at the very top of <body> so they beat the head stylesheet in cascade
+  // order and apply BEFORE FIRST PAINT (no FOUC, mirrors theme-toggle):
+  //   1. #accent-theme  — SSR <style> with the admin DEFAULT palette (what
+  //      first-time visitors, shared links, and no-JS visitors see)
+  //   2. init <script>  — synchronous; if localStorage holds a different
+  //      valid pick, inserts #accent-visitor right after the default
+  // Admin saves revalidate the layout, so the site stays fully static.
+  // Empty palette table → neither renders → theme.css fallback, unchanged.
+  const paletteMenu = await getPublicPaletteMenu();
+  const defaultCss =
+    paletteMenu.palettes.find((p) => p.slug === paletteMenu.defaultSlug)?.css ?? null;
+  const accentInit = buildAccentInitScript(paletteMenu);
+
   return (
     <html
       lang="en"
@@ -75,6 +91,10 @@ export default function RootLayout({
       className={`${poppins.variable} ${agdasima.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-dvh flex-col">
+        {defaultCss ? (
+          <style id="accent-theme" dangerouslySetInnerHTML={{ __html: defaultCss }} />
+        ) : null}
+        {accentInit ? <script dangerouslySetInnerHTML={{ __html: accentInit }} /> : null}
         <a
           href="#main"
           className="sr-only z-[100] rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
@@ -84,7 +104,10 @@ export default function RootLayout({
         <Providers>
           <AuthRedirectToast />
           <SiteChrome>
-            <Navbar />
+            <Navbar
+              palettes={paletteMenu.palettes}
+              defaultPaletteSlug={paletteMenu.defaultSlug}
+            />
           </SiteChrome>
           <main id="main" className="flex-1">
             {children}

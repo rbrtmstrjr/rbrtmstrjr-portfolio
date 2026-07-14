@@ -13,8 +13,16 @@ import { site } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { NavSearch } from "@/components/site/nav-search";
+import { AccentPicker } from "@/components/site/accent-picker";
+import type { PublicPalette } from "@/lib/palettes-data";
 
-export function Navbar() {
+export function Navbar({
+  palettes = [],
+  defaultPaletteSlug = null,
+}: {
+  palettes?: PublicPalette[];
+  defaultPaletteSlug?: string | null;
+}) {
   const [scrolled, setScrolled] = React.useState(false);
   const { scrollY } = useScroll();
 
@@ -49,6 +57,7 @@ export function Navbar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
+          <AccentPicker palettes={palettes} defaultSlug={defaultPaletteSlug} />
           <ThemeToggle />
           <Button asChild size="sm">
             <Link href="/#contact">Start a project</Link>

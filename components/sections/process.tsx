@@ -4,7 +4,7 @@ const steps = [
   {
     title: "Tell me the problem",
     blurb:
-      "A short call or message — in plain language, no tech talk needed. What's slow, manual, or costing you money?",
+      "A short call or message, in plain language. No tech talk needed. What's slow, manual, or costing you money?",
   },
   {
     title: "Get a clear plan",
@@ -19,12 +19,12 @@ const steps = [
   {
     title: "Watch it get built",
     blurb:
-      "Progress lands in weekly, usable slices — you try the real thing as it grows, not a demo at the end.",
+      "You get working pieces every week and try the real thing as it grows, instead of one big reveal at the end.",
   },
   {
     title: "Launch, trained and supported",
     blurb:
-      "Your team gets onboarded, you get the keys, and I stay available. Software is a relationship, not a handoff.",
+      "Your team gets onboarded, you get the keys, and I stick around. I don't disappear after launch.",
   },
 ] as const;
 

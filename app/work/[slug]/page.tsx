@@ -78,7 +78,7 @@ export default async function CaseStudyPage({
           {project.flagship ? (
             <span className="mb-5 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-primary">
               <Sparkles className="size-3" aria-hidden />
-              Flagship — own product
+              Flagship · own product
             </span>
           ) : null}
           <span className="flex flex-wrap items-center gap-3">
@@ -183,8 +183,8 @@ export default async function CaseStudyPage({
             <blockquote className="max-w-3xl text-xl leading-relaxed font-medium md:text-2xl">
               “{project.testimonial.quote}”
             </blockquote>
-            <figcaption className="mt-5 text-sm text-muted-foreground">
-              — {project.testimonial.author}
+            <figcaption className="mt-5 text-sm font-medium text-muted-foreground">
+              {project.testimonial.author}
             </figcaption>
           </figure>
         </Reveal>
@@ -198,7 +198,7 @@ export default async function CaseStudyPage({
             <div>
               <h2 className="text-2xl md:text-3xl">Facing a similar problem?</h2>
               <p className="mt-2 max-w-md text-muted-foreground">
-                Tell me what&apos;s slowing your business down — I&apos;ll tell you
+                Tell me what&apos;s slowing your business down. I&apos;ll tell you
                 honestly whether software can fix it.
               </p>
             </div>

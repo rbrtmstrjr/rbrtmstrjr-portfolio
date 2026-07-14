@@ -8,6 +8,13 @@
    Brand blue scale (reference):
    50 #e8f5ff · 100 #d5ecff · 200 #b3dbff · 300 #85c2ff · 400 #569dff
    500 #2f77ff · 600 #0c4eff · 700 #0040ff · 800 #063bcd · 900 #10399f · 950 #0a205c
+
+   RUNTIME ACCENT OVERRIDE (admin → Settings → Theme): a custom 11-shade scale
+   saved per mode overrides ONLY --primary / --ring / --brand-panel /
+   --brand-panel-deep (and dark --primary-foreground) via an inline <style> in
+   app/layout.tsx (see lib/theme-accent.ts buildAccentCss). The values below
+   are the BUILT-IN DEFAULTS — they apply whenever no custom scale is saved,
+   and both scales above/below mirror them exactly.
    ========================================================================== */
 
 @theme inline {

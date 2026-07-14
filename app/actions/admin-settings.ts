@@ -73,6 +73,13 @@ async function upsertSettings(
         error: "The settings table doesn't exist yet — run supabase/upgrade-settings.sql.",
       };
     }
+    // PostgREST: an upsert column the DB doesn't have yet (pre-upgrade schema)
+    if (error.code === "PGRST204") {
+      return {
+        ok: false,
+        error: "The settings table is missing a column. Run the latest supabase upgrade SQL.",
+      };
+    }
     return { ok: false, error: error.message };
   }
   revalidateSite();

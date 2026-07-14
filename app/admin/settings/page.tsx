@@ -2,11 +2,13 @@ import {
   CalendarClock,
   Globe,
   ListChecks,
+  Palette,
   Plug,
   UserRound,
 } from "lucide-react";
 import { WindowCard } from "@/components/ui/window-card";
 import { AccountSettings } from "@/components/admin/account-settings";
+import { PalettesManager } from "@/components/admin/palette-settings";
 import {
   AvailabilityForm,
   SiteInfoForm,
@@ -14,6 +16,7 @@ import {
 } from "@/components/admin/settings-forms";
 import { getAdminUser } from "@/lib/supabase/server-auth";
 import { getMilestoneTemplates, getSettingsRow } from "@/lib/settings-data";
+import { getPaletteRows } from "@/lib/palettes-data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { cn } from "@/lib/utils";
 
@@ -122,10 +125,11 @@ function Section({
 }
 
 export default async function AdminSettingsPage() {
-  const [user, settings, templates, integrations] = await Promise.all([
+  const [user, settings, templates, palettes, integrations] = await Promise.all([
     getAdminUser(),
     getSettingsRow(),
     getMilestoneTemplates(),
+    getPaletteRows(),
     checkIntegrations(),
   ]);
 
@@ -155,6 +159,15 @@ export default async function AdminSettingsPage() {
         icon={CalendarClock}
       >
         <AvailabilityForm settings={settings} />
+      </Section>
+
+      <Section
+        label="settings/palettes"
+        title="Accent palettes"
+        hint="visitors pick from this menu"
+        icon={Palette}
+      >
+        <PalettesManager rows={palettes} />
       </Section>
 
       <Section

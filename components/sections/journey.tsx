@@ -12,7 +12,7 @@ const stages = [
   {
     years: "1.5 yrs",
     title: "Graphic Design",
-    blurb: "Learned to communicate visually — hierarchy, typography, restraint. The eye was trained first.",
+    blurb: "Learned to communicate visually: hierarchy, typography, restraint. The eye came first.",
   },
   {
     years: "2.5 yrs",
@@ -23,7 +23,7 @@ const stages = [
   {
     years: "1 yr",
     title: "UI/UX Design",
-    blurb: "From pages to products — user flows, usability, and designing for outcomes instead of looks.",
+    blurb: "From pages to products. User flows, usability, and designing for outcomes instead of looks.",
   },
   {
     years: "1.5 yrs · now",

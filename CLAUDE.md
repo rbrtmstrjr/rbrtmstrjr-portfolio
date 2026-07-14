@@ -35,6 +35,33 @@ which can't read CSS vars.
   - Dark: primary **aquamarine** `#64ffda` (aqua-300) on `#00352f` text, deep navy background — NO blue accents in dark, NO aquamarine in light
   - `--brand-panel` / `--brand-panel-deep`: deep accent tones that stay dark in BOTH themes (for white line-art backdrops)
   - `--success` / `--warning` (2026-07-12): FUNCTIONAL status colors (badges/feedback only — never brand accents), defined per theme
+  - **ACCENT PALETTES + VISITOR PICKER** (2026-07-14): the admin curates a
+    palette MENU; each VISITOR picks their accent (localStorage, per-browser,
+    no DB writes). `public.accent_palettes` (name, slug, `scale_light`/`_dark`
+    11-shade jsonb, `is_default` — partial unique index enforces ONE default —
+    sort_order; RLS with PUBLIC READ, service-role writes;
+    `supabase/upgrade-palettes.sql`, which also drops the superseded
+    single-accent settings columns; 'Classic' = seeded brand default).
+    `lib/theme-accent.ts` = shared scale machinery (format-tolerant parser,
+    `sanitizeScale` re-validation, `buildAccentCss` → overrides ONLY
+    `--primary`/`--ring`/`--brand-panel`/`--brand-panel-deep` + dark
+    `--primary-foreground`; light 600/800, dark 300/900/950 — mirrors
+    theme.css). `lib/palettes-data.ts` builds the public menu (per-palette CSS
+    + defaultSlug) and the no-FOUC init script. Root layout renders at top of
+    `<body>`: SSR `<style id="accent-theme">` (DEFAULT palette — first-timers,
+    shared links, no-JS) then a sync `<script>` that inserts
+    `#accent-visitor` AFTER it (cascade wins) when localStorage
+    `accent-palette` holds a different valid slug — correct on first paint.
+    `components/site/accent-picker.tsx` (navbar, beside theme toggle; hidden
+    under 2 palettes): popover of swatches, trigger dot is `bg-primary` so it
+    always shows the live accent; picking swaps `#accent-visitor` + saves the
+    slug; stale slug → default. Admin UI
+    `components/admin/palette-settings.tsx` in /admin/settings (list +
+    dialog with dual paste inputs, swatch strips, real-component previews,
+    contrast warnings; make-default / reorder / delete-blocked-for-default).
+    Saves `revalidatePath("/", "layout")` — site stays SSG. Empty table →
+    theme.css fallback, picker hidden, nothing breaks. OG image + notify
+    emails keep hardcoded brand blue (documented exceptions).
 - **Typography** (loaded in `app/layout.tsx` via `next/font`):
   - Display: **Agdasima** (`--font-display` / `font-display`) — **brand rule: ALWAYS bold + UPPERCASE, NEVER italic**, enforced globally in `globals.css` on `h1,h2,h3` and `.font-display`
   - Body/UI: **Poppins** (`--font-sans`)
@@ -205,7 +232,8 @@ renders EMPTY work/tab sections — content requires the env keys (local
 
 ### Navigation & chrome (`components/site/`)
 - **navbar.tsx** — top bar: "RM." wordmark (big Agdasima, `foreground`),
-  centered `NavSearch` (desktop only), theme toggle + "Start a project".
+  centered `NavSearch` (desktop only), accent picker + theme toggle + "Start a
+  project" (palette menu props come from the root layout).
   Morphs full-width→floating pill (`max-w-7xl`, rounded-full, blur, shadow) on scroll.
 - **nav-search.tsx** — functional search over projects + sections, combobox ARIA, dropdown results.
 - **bottom-nav.tsx** — floating dock (Home/Services/Work/Contact), icon+label,

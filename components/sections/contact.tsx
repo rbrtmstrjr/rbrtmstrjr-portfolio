@@ -92,8 +92,8 @@ export function Contact({
             </h2>
             <p className="mt-5 max-w-md leading-relaxed text-muted-foreground">
               Tell me what&apos;s slowing your business down. If software can fix
-              it, I&apos;ll show you how — and if it can&apos;t, I&apos;ll tell you
-              that too.
+              it, I&apos;ll show you how. If it can&apos;t, I&apos;ll tell you that
+              too.
             </p>
 
             {/* direct contact + socials — moved here from the old site footer */}
@@ -150,8 +150,8 @@ export function Contact({
                     <CheckCircle2 className="size-10 text-primary" aria-hidden />
                     <h3 className="mt-5 font-display text-2xl">Message sent</h3>
                     <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-                      Thanks — I&apos;ve got it. Expect a personal reply within
-                      24–48 hours.
+                      Thanks, I&apos;ve got it. Expect a personal reply within a
+                      day or two.
                     </p>
                   </motion.div>
                 ) : (

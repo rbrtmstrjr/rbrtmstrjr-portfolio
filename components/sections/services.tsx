@@ -94,7 +94,7 @@ export function Services() {
               <span className="font-medium text-primary/80">
                 Also: UI/UX, graphic &amp; web design.
               </span>{" "}
-              6+ years of design behind every build — 400+ websites shipped, so
+              6+ years of design behind every build, 400+ websites shipped, so
               your software works hard <em>and</em> looks the part.
             </p>
           </div>

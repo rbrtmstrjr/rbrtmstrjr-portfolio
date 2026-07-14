@@ -29,7 +29,7 @@ function AvailabilityPill({ availability }: { availability: HeroAvailability }) 
     (status === "available"
       ? "Available for new projects"
       : status === "booked"
-        ? "Currently booked — inquiries welcome"
+        ? "Currently booked, but inquiries welcome"
         : "Not taking new projects right now");
 
   return (
@@ -83,10 +83,9 @@ export function Hero({
             className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl"
           >
             <span className="font-medium text-foreground">
-              I turn manual work into software that grows your business
+              I turn manual work into software that grows your business.
             </span>{" "}
-            — custom web apps and AI automation, designed and engineered end to
-            end.
+            Custom web apps and AI automation, designed and built end to end.
           </motion.p>
 
           <motion.div {...enter(0.75)} className="mt-9 flex flex-wrap items-center gap-3">

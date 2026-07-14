@@ -34,7 +34,7 @@ export const services: Service[] = [
     title: "Custom Software & Web Apps",
     tagline: "Turn manual work into software.",
     summary:
-      "Operational tools built around how your business actually runs — so paperwork becomes a system and chaos becomes a workflow.",
+      "Operational tools built around how your business already runs, so the paperwork and guesswork turn into something that just works.",
     outcomes: [
       "Inventory & POS systems",
       "Operations dashboards",
@@ -42,11 +42,11 @@ export const services: Service[] = [
     ],
     detail: {
       intro:
-        "Off-the-shelf software forces your business to work its way. I build the opposite: systems shaped around how your team already works — so adoption is instant, training takes a day, and the busywork simply disappears.",
+        "Most software makes your business bend to fit it. I do the opposite. I build around how your team already works, so people pick it up in a day and the busywork just goes away.",
       features: [
         {
           title: "Inventory & POS systems",
-          desc: "Sales, stock, and daily reporting in one place — designed for real counters and real rush hours.",
+          desc: "Sales, stock, and daily reporting in one place, built for real counters and real rush hours.",
         },
         {
           title: "Operations dashboards",
@@ -54,11 +54,11 @@ export const services: Service[] = [
         },
         {
           title: "Booking & ordering portals",
-          desc: "Let customers book, order, and pay on their own — without tying up your phone line.",
+          desc: "Customers book, order, and pay on their own, without tying up your phone line.",
         },
         {
           title: "Internal tools",
-          desc: "Approvals, tracking, staff workflows — the glue software your business is missing.",
+          desc: "Approvals, tracking, staff workflows. The glue software most businesses are missing.",
         },
         {
           title: "Mobile-first web apps",
@@ -66,7 +66,7 @@ export const services: Service[] = [
         },
         {
           title: "Integrations",
-          desc: "Connects to what you already use — spreadsheets, chat apps, payment providers.",
+          desc: "Connects to what you already use: spreadsheets, chat apps, payment providers.",
         },
       ],
       fitFor: [
@@ -74,7 +74,7 @@ export const services: Service[] = [
         "Reports take hours to compile every week",
         "Stock counts never match reality",
         "Staff repeat the same data entry every day",
-        "Off-the-shelf tools almost fit — but never quite",
+        "Off-the-shelf tools almost fit, but never quite",
       ],
       categoryKey: "Custom Apps",
     },
@@ -86,7 +86,7 @@ export const services: Service[] = [
     title: "AI Automation",
     tagline: "Automate the repetitive. Free your team.",
     summary:
-      "AI that quietly handles the work your team shouldn't be doing — data entry, documents, follow-ups, reporting — so people can focus on what grows revenue.",
+      "AI that handles the work your team shouldn't be doing (data entry, documents, follow-ups, reporting) so people can focus on what grows revenue.",
     outcomes: [
       "Document & data-entry automation",
       "AI assistants trained on your business",
@@ -94,15 +94,15 @@ export const services: Service[] = [
     ],
     detail: {
       intro:
-        "AI is only useful when it removes real work. I automate the repetitive tasks eating your team's hours — documents, messages, reports — with a human always in control and nothing failing silently.",
+        "AI is only worth it when it takes real work off your plate. I automate the repetitive tasks eating your team's hours (documents, messages, reports), always with a human in control and nothing failing quietly in the background.",
       features: [
         {
           title: "Document & data-entry automation",
-          desc: "PDFs, photos, and forms read, extracted, and filed automatically — no more retyping.",
+          desc: "PDFs, photos, and forms read, extracted, and filed automatically. No more retyping.",
         },
         {
           title: "AI customer assistants",
-          desc: "Instant, accurate answers on your channels, trained on your business — with graceful human handoff.",
+          desc: "Instant, accurate answers on your channels, trained on your business, and it hands off to a human when it should.",
         },
         {
           title: "Automated reporting",
@@ -110,15 +110,15 @@ export const services: Service[] = [
         },
         {
           title: "Follow-ups & reminders",
-          desc: "Quotes chased, invoices reminded, bookings confirmed — automatically, on time, every time.",
+          desc: "Quotes chased, invoices reminded, bookings confirmed. Automatically, on time, every time.",
         },
         {
           title: "Workflow triggers",
-          desc: "When X happens, Y gets done. Orders, alerts, escalations — no one has to remember.",
+          desc: "When X happens, Y gets done. Orders, alerts, escalations, and nobody has to remember.",
         },
         {
           title: "Human-in-the-loop review",
-          desc: "AI drafts, your team approves. Trust is built in, not bolted on.",
+          desc: "AI drafts, your team approves. You stay in control of anything that matters.",
         },
       ],
       fitFor: [
@@ -126,7 +126,7 @@ export const services: Service[] = [
         "Hours go into retyping documents into systems",
         "Reports are compiled by hand every week",
         "Follow-ups keep slipping through the cracks",
-        "You want AI that's practical — not hype",
+        "You want AI that's actually useful, not hype",
       ],
       categoryKey: "AI Automation",
     },
