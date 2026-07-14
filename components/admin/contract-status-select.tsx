@@ -10,10 +10,11 @@ import type { ContractStatus } from "@/lib/contracts-data";
 
 /**
  * One clear action instead of a status dropdown: completing a contract is THE
- * lifecycle moment (it flips the portal into testimonial mode). Only appears
- * once EVERY milestone is approved (canComplete) — you can't complete a
- * contract with work still pending. Draft/active/archived stay editable in
- * the Edit form for edge cases.
+ * lifecycle moment (it flips the portal into testimonial mode). Stays visible
+ * but DISABLED until every milestone is approved (canComplete) — you can't
+ * complete a contract with work still pending, and the disabled state hints
+ * at what's left. Draft/active/archived stay editable in the Edit form for
+ * edge cases.
  */
 export function MarkCompletedButton({
   contractId,
@@ -28,7 +29,7 @@ export function MarkCompletedButton({
   const router = useRouter();
   const [pending, setPending] = React.useState(false);
 
-  if (status === "completed" || status === "archived" || !canComplete) return null;
+  if (status === "completed" || status === "archived") return null;
 
   async function onClick() {
     setPending(true);
@@ -43,7 +44,14 @@ export function MarkCompletedButton({
   }
 
   return (
-    <Button size="sm" disabled={pending} onClick={onClick}>
+    <Button
+      size="sm"
+      disabled={pending || !canComplete}
+      onClick={onClick}
+      title={
+        canComplete ? undefined : "Approve every milestone before completing the contract."
+      }
+    >
       {pending ? <Loader2 className="animate-spin" aria-hidden /> : <CheckCircle2 aria-hidden />}
       Mark as completed
     </Button>
