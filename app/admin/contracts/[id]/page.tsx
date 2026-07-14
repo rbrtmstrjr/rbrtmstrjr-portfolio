@@ -58,6 +58,7 @@ export default async function ContractDetailPage({
   const links = await getMilestoneLinkRows(milestones.map((m) => m.id));
 
   const approved = milestones.filter((m) => m.status === "approved").length;
+  const allApproved = milestones.length > 0 && approved === milestones.length;
   const clientEmail = client?.contact_email ?? null;
 
   return (
@@ -102,7 +103,11 @@ export default async function ContractDetailPage({
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-            <MarkCompletedButton contractId={contract.id} status={contract.status} />
+            <MarkCompletedButton
+              contractId={contract.id}
+              status={contract.status}
+              canComplete={allApproved}
+            />
           </div>
         </div>
       </div>

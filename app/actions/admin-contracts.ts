@@ -81,6 +81,22 @@ export async function setContractStatus(
   if (!["draft", "active", "completed", "archived"].includes(status)) {
     return { ok: false, error: "Invalid status." };
   }
+  // Guard: a contract can only be completed once EVERY milestone is approved
+  // (mirrors the UI, and blocks a stale/forged action from completing early).
+  if (status === "completed") {
+    const { data: ms, error: msError } = await supabase
+      .from("milestones")
+      .select("status")
+      .eq("contract_id", id);
+    if (msError) return { ok: false, error: msError.message };
+    const list = ms ?? [];
+    if (list.length === 0 || !list.every((m) => m.status === "approved")) {
+      return {
+        ok: false,
+        error: "Every milestone must be approved before the contract can be completed.",
+      };
+    }
+  }
   const { error } = await supabase
     .from("contracts")
     .update({ status, updated_at: new Date().toISOString() })
