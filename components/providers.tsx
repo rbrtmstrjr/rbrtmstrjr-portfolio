@@ -16,7 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           prefers-reduced-motion fallback for free */}
       <MotionConfig reducedMotion="user">
         {children}
-        <Toaster position="bottom-right" />
+        <Toaster position="top-center" />
       </MotionConfig>
     </ThemeProvider>
   );
